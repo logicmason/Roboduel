@@ -73,4 +73,9 @@ li:hover{
   color:#fff;
 }
 
-
+.robot {
+  position:absolute;
+  border: 20px solid blue;
+  border-radius: 12px;
+  font-size: 0;
+}
