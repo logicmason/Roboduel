@@ -1,0 +1,76 @@
+body, html{
+  height:100%;
+}
+body {
+  margin: 0;
+  background-color:#fff;
+  font-size: 18px;
+}
+
+.arena {
+  width: 600px;
+  height: 600px;
+  position: relative;
+  border-right: 1px solid black;
+  border-top: 1px solid black;
+  box-shadow: 0px 0px 5px 2px black inset;
+  margin-left: 10px;
+  margin-top: 10px;
+  background-color:silver;
+  border: 1px solid gray;
+}
+
+img {
+
+ transition: all 1s ease-in;
+
+}
+a:link, a:visited, a:active{
+  color: lightblue;
+  padding-left:25px;
+  margin-top:-20px;
+}
+
+.topbar span{
+  padding:5px 10px;
+  color: #ddd;
+  border-radius: 5px;
+  float:right;
+}
+
+.topbar span:hover{
+  background-color: #885;
+  text-shadow: 1px 1px 2px #775;
+}
+
+.topbar{
+  height:32px;
+  background-color: #555;
+}
+.title{
+  background-color: #777;
+}
+
+.dropdown{
+  width:150px;
+  background-color:#ccc;
+  color:#555;
+  z-index:100000000;
+  position:absolute;
+  list-style-type: none;
+  margin-left:-25px;
+  margin-top:0;
+  padding-left:0;
+}
+
+li{
+  padding:5px;
+  margin-left:0;
+}
+
+li:hover{
+  background:#777;
+  color:#fff;
+}
+
+
