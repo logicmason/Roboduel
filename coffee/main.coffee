@@ -1,3 +1,5 @@
+Math.TAO = Math.PI * 2
+
 $(document).ready ->
   robot = new Robot({position: {x: 20, y: 40}})
   console.log robot

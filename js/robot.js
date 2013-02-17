@@ -10,6 +10,8 @@
     __extends(Robot, _super);
 
     function Robot() {
+      this.move = __bind(this.move, this);
+
       this.step = __bind(this.step, this);
       return Robot.__super__.constructor.apply(this, arguments);
     }
@@ -22,16 +24,40 @@
         return console.log("ouch");
       },
       name: "robot",
-      position: {
-        x: 0,
-        y: 0
+      x: 0,
+      y: 0,
+      dx: 0,
+      dy: 0,
+      frequency: 1000 / 30,
+      arena: {
+        width: 600,
+        height: 600
       },
-      speed: {
-        x: 0,
-        y: 0
-      },
-      frequency: 300
+      width: 40,
+      height: 40
     };
+
+    Robot.prototype.maxX = function() {
+      return this.attributes.arena.width - this.attributes.width;
+    };
+
+    Robot.prototype.minX = function() {
+      return 0;
+    };
+
+    Robot.prototype.maxY = function() {
+      return this.attributes.arena.height - this.attributes.height;
+    };
+
+    Robot.prototype.minY = function() {
+      return 0;
+    };
+
+    Robot.prototype.script = ["move", "left"];
+
+    Robot.prototype.lineNum = 0;
+
+    Robot.prototype.noisy = false;
 
     Robot.prototype.die = function() {
       console.log("" + this.attributes.name + " has died");
@@ -46,11 +72,54 @@
     };
 
     Robot.prototype.step = function() {
-      this.set({
-        x: this.get('position').x += this.get('speed').x,
-        y: this.get('position').y += this.get('speed').y
-      });
-      return console.log("from Step()", this.attributes.position);
+      var command;
+      command = this.script[this.lineNum];
+      this[command]();
+      if (this.noisy) {
+        console.log("from Step()", this.attributes.position);
+      }
+      return this.lineNum = (this.lineNum + 1) % this.script.length;
+    };
+
+    Robot.prototype.move = function() {
+      var dx, dy, newx, newy;
+      dx = Math.cos(this.get('dir'));
+      dy = Math.sin(this.get('dir'));
+      newx = this.attributes.x + dx;
+      if (newx > this.maxX()) {
+        newx = this.maxX();
+      }
+      if (newx < this.minX()) {
+        newx = this.minX();
+      }
+      newy = this.attributes.y + dy;
+      if (newy > this.maxY()) {
+        newy = this.maxY();
+      }
+      if (newy < this.minY()) {
+        newy = this.minY();
+      }
+      this.set('x', newx);
+      this.set('y', newy);
+      if (this.noisy) {
+        return console.log("from Step()", this.attributes);
+      }
+    };
+
+    Robot.prototype.left = function() {
+      this.set('dir', (this.attributes.dir + 0.01) % Math.TAO);
+      this.set('dx', Math.cos(this.get('dir')));
+      return this.set('dy', Math.sin(this.get('dir')));
+    };
+
+    Robot.prototype.right = function() {
+      this.set('dir', (Math.TAO + this.attributes.dir - 0.01) % Math.TAO);
+      this.set('dx', Math.cos(this.get('dir')));
+      return this.set('dy', Math.sin(this.get('dir')));
+    };
+
+    Robot.prototype.idle = function() {
+      return this;
     };
 
     return Robot;
@@ -74,8 +143,8 @@
     };
 
     RobotView.prototype.render = function() {
-      this.$el.css("left", this.model.get('position').x);
-      this.$el.css("top", this.model.get('position').y);
+      this.$el.css("left", this.model.get('x'));
+      this.$el.css("top", this.model.get('y'));
       this.$el.html("robot").appendTo('.arena');
       return this;
     };
