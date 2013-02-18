@@ -24,18 +24,6 @@ body {
   border: 1px solid gray;
 }
 
-.rightbar {
-  padding: 10px;
-  margin-left: 620px;
-}
-
-.commands {
-  background: wheat;
-  margin:0 auto;
-  padding: 10px;
-  width: 300px;
-}
-
 img {
 
  transition: all 1s ease-in;
@@ -79,6 +67,41 @@ a:link, a:visited, a:active{
   padding-left:0;
 }
 
+.rightbar {
+  padding: 10px;
+  margin-left: 620px;
+}
+
+.commands {
+  background: wheat;
+  margin:0 auto;
+  padding: 10px;
+  width: 300px;
+}
+
+.commands .heading {
+  margin: 0;
+}
+
+.editButton {
+  float: right;
+  background: blue;
+  width: 70px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  vertical-align: middle;
+  color: white;
+}
+
+textarea {
+  line-height: 1.7em;
+  font-size: 17px;
+  min-height: 200px;
+  width: 240px;
+  margin: 20px auto;
+}
+
 li{
   padding:5px;
   margin-left:0;
@@ -102,4 +125,18 @@ li:hover{
   border-top: 2px solid black;
   border-bottom: 2px solid black;
   border-radius: 2px;
+}
+
+.damage {
+  opacity: 0.5;
+}
+
+@keyframes damage {
+  from {
+    opacity: 1;
+  }
+ 
+  to {
+    opacity: 0.5;
+  }
 }

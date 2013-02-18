@@ -1,7 +1,7 @@
 class window.Missile extends Backbone.Model
   defaults:
     hp: 1
-    damage: 10
+    damage: 1
     x: 0
     y: 0
     dir: 0
@@ -45,7 +45,6 @@ class window.Missile extends Backbone.Model
     @[command]()
     console.log("from Step()", @attributes) if @noisy
     @attributes.lineNum = (@attributes.lineNum + 1) % @attributes.script.length
-
   #Commands -- these are read from the script[] and executed in step()
   move: =>
     newx = @attributes.x + @dx()

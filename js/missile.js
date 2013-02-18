@@ -17,7 +17,7 @@
 
     Missile.prototype.defaults = {
       hp: 1,
-      damage: 10,
+      damage: 1,
       x: 0,
       y: 0,
       dir: 0,

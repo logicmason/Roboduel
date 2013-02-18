@@ -21,7 +21,7 @@
       dir: 0,
       hp: 100,
       maxHP: 1,
-      damage: 5,
+      attack: 5,
       name: "robot",
       x: 0,
       y: 0,
@@ -37,6 +37,9 @@
     };
 
     Robot.prototype.initialize = function() {
+      if (!this.attributes.hp) {
+        this.set('hp', defaults["hp"]);
+      }
       if (!this.attributes.script) {
         this.set('script', ["move", "move", "move", "move", "left", "fire", "idle"]);
       }
@@ -114,9 +117,20 @@
         rTop = _this.get('y');
         rBottom = _this.get('y') + _this.get('height');
         if ((mRight > rLeft) && (mLeft < rRight) && (mTop < rBottom) && (mBottom > rTop)) {
-          return console.log([mLeft, mRight, mTop, mBottom]);
+          if (_this.noisy) {
+            console.log([mLeft, mRight, mTop, mBottom]);
+          }
+          return _this.takeDamage(missile.get('damage'));
         }
       });
+    };
+
+    Robot.prototype.takeDamage = function(damage) {
+      this.set('hp', this.attributes.hp - damage);
+      this.trigger('damage');
+      if (this.attributes.hp < 0) {
+        return this.die();
+      }
     };
 
     Robot.prototype.move = function() {
@@ -164,7 +178,7 @@
         x: this.get('x') + this.get('width') / 2 + Math.cos(this.get('dir')) * mult,
         y: this.get('y') + this.get('height') / 2 + Math.sin(this.get('dir')) * mult,
         dir: this.get('dir'),
-        damage: this.damage
+        damage: this.attack
       });
       missileView = new MissileView({
         model: missile
@@ -194,7 +208,16 @@
     RobotView.prototype.initialize = function() {
       console.log(this.model);
       this.listenTo(this.model, 'change', this.render);
+      this.listenTo(this.model, 'damage', this.blink);
       return this.listenTo(this.model, 'destroy', this.remove);
+    };
+
+    RobotView.prototype.blink = function() {
+      var _this = this;
+      this.$el.addClass('damage');
+      return setTimeout((function() {
+        return _this.$el.removeClass('damage');
+      }), 10);
     };
 
     RobotView.prototype.render = function() {
@@ -219,6 +242,10 @@
 
     RobotCommandView.prototype.className = 'commands';
 
+    RobotCommandView.prototype.events = {
+      'click .editButton': 'toggleView'
+    };
+
     RobotCommandView.prototype.initialize = function() {
       this.listenTo(this.model, 'change:script', this.render);
       this.listenTo(this.model, 'destroy', this.remove);
@@ -226,9 +253,20 @@
       return this.render();
     };
 
+    RobotCommandView.prototype.toggleView = function() {
+      if (this.display === "standard") {
+        this.renderInput();
+      } else if (this.display === "input") {
+        this.model.set('script', this.$('textarea').val().split("\n"));
+        this.render();
+      }
+      return console.log("" + this.display + " display");
+    };
+
     RobotCommandView.prototype.render = function() {
       var x, _i, _len, _ref;
-      this.$el.html("<h3>" + (this.model.get('name')) + "'s control program</h3>");
+      this.$el.html('<div class="editButton">Edit</div>');
+      this.$el.append('<h3 class="heading">' + ("" + (this.model.get('name')) + "'s control program</h3>"));
       this.$el.append("<ol>");
       _ref = this.model.get('script');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -236,6 +274,22 @@
         this.$el.append("<li>" + x + "</li>");
       }
       this.$el.append("</ol>");
+      this.display = 'standard';
+      return this;
+    };
+
+    RobotCommandView.prototype.renderInput = function() {
+      var area, x, _i, _len, _ref;
+      this.$el.html('<div class="editButton">Done</div>');
+      this.$el.append('<h3 class="heading">' + ("" + (this.model.get('name')) + "'s control program</h3>"));
+      area = '<textarea>';
+      _ref = this.model.get('script');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        x = _ref[_i];
+        area += "\n" + x;
+      }
+      this.$el.append(area + '</textarea>');
+      this.display = 'input';
       return this;
     };
 

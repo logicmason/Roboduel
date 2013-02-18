@@ -3,7 +3,7 @@ class window.Robot extends Backbone.Model
     dir: 0
     hp: 100
     maxHP: 1
-    damage: 5
+    attack: 5
     name: "robot"
     x: 0
     y: 0
@@ -17,6 +17,7 @@ class window.Robot extends Backbone.Model
     height: 40
 
   initialize: ->
+    @set('hp', defaults["hp"]) unless @attributes.hp
     @set('script',  [
       "move"
       "move"
@@ -71,8 +72,14 @@ class window.Robot extends Backbone.Model
 
       if ((mRight > rLeft) and (mLeft < rRight) and
           (mTop < rBottom) and (mBottom > rTop))
-            console.log([mLeft,mRight,mTop,mBottom])
+            console.log([mLeft,mRight,mTop,mBottom]) if @noisy
+            @takeDamage(missile.get('damage'))
           )
+
+  takeDamage: (damage)->
+    @set('hp', @attributes.hp - damage)
+    @trigger('damage')
+    @die() if @attributes.hp < 0
 
   #Commands -- these are read from the script[] and executed in step()
   move: =>
@@ -105,7 +112,7 @@ class window.Robot extends Backbone.Model
       x: @get('x')+@get('width')/2 + Math.cos(@get('dir')) * mult
       y: @get('y')+@get('height')/2 + Math.sin(@get('dir')) * mult
       dir: @get('dir')
-      damage: @damage
+      damage: @attack
     })
     missileView = new MissileView({model: missile})
     window.silo.add(missile)
@@ -120,7 +127,12 @@ class window.RobotView extends Backbone.View
   initialize: =>
     console.log(@model)
     @listenTo(@model, 'change', @render)
+    @listenTo(@model, 'damage', @blink)
     @listenTo(@model, 'destroy', @remove)
+
+  blink: ->
+    @$el.addClass('damage')
+    setTimeout (=> @$el.removeClass('damage')), 10
 
   render: ->
     @$el.css("left", @model.get('x'))
@@ -132,17 +144,40 @@ class window.RobotView extends Backbone.View
 class window.RobotCommandView extends Backbone.View
   className: 'commands'
 
+  events:
+    'click .editButton': 'toggleView'
+
   initialize: ->
     @listenTo(@model, 'change:script', @render)
     @listenTo(@model, 'destroy', @remove)
     $('.rightbar').append(@$el)
     @render()
 
+  toggleView: ->
+    if @display == "standard"
+      @renderInput()
+    else if @display == "input"
+      @model.set('script', @$('textarea').val().split("\n"))
+      @render()
+    console.log "#{@display} display"
+
   render: ->
-    @$el.html("<h3>#{@model.get('name')}'s control program</h3>")
+    @$el.html('<div class="editButton">Edit</div>')
+    @$el.append('<h3 class="heading">'+"#{@model.get('name')}'s control program</h3>")
     @$el.append("<ol>")
     for x in @model.get('script')
       @$el.append("<li>#{x}</li>")
     @$el.append("</ol>")
+    @display = 'standard'
+    @
+
+  renderInput: ->
+    @$el.html('<div class="editButton">Done</div>')
+    @$el.append('<h3 class="heading">'+"#{@model.get('name')}'s control program</h3>")
+    area = ('<textarea>')
+    for x in @model.get('script')
+      area += ("\n#{x}")
+    @$el.append(area+'</textarea>')
+    @display = 'input'
     @
 
