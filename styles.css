@@ -90,8 +90,16 @@ li:hover{
 }
 
 .robot {
-  position:absolute;
+  position: absolute;
   border: 20px solid blue;
   border-radius: 12px;
   font-size: 0;
+}
+
+.missile {
+  position: absolute;
+  border: 5px solid black;
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+  border-radius: 2px;
 }

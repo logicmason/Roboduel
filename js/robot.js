@@ -28,7 +28,7 @@
       y: 0,
       dx: 0,
       dy: 0,
-      frequency: 1000 / 30,
+      frequency: 1000 / 15,
       arena: {
         width: 600,
         height: 600
@@ -38,7 +38,8 @@
     };
 
     Robot.prototype.initialize = function() {
-      this.set('script', ["move", "left", "move", "idle"]);
+      this.missiles = [];
+      this.set('script', ["move", "move", "move", "move", "left", "fire", "idle"]);
       return this.set('lineNum', 0);
     };
 
@@ -65,7 +66,9 @@
     Robot.prototype.noisy = false;
 
     Robot.prototype.die = function() {
-      console.log("" + this.attributes.name + " has died");
+      if (this.noisy) {
+        console.log("" + this.attributes.name + " has died");
+      }
       clearInterval(this.intervalID);
       return this.destroy();
     };
@@ -80,7 +83,9 @@
     Robot.prototype.step = function() {
       var command;
       command = this.attributes.script[this.attributes.lineNum];
-      this[command]();
+      if (this[command]) {
+        this[command]();
+      }
       if (this.noisy) {
         console.log("from Step()", this.attributes);
       }
@@ -113,15 +118,32 @@
     };
 
     Robot.prototype.left = function() {
-      this.set('dir', (this.attributes.dir + 0.02) % Math.TAO);
+      this.set('dir', (this.attributes.dir + 0.05) % Math.TAO);
       this.set('dx', Math.cos(this.get('dir')));
       return this.set('dy', Math.sin(this.get('dir')));
     };
 
     Robot.prototype.right = function() {
-      this.set('dir', (Math.TAO + this.attributes.dir - 0.02) % Math.TAO);
+      this.set('dir', (Math.TAO + this.attributes.dir - 0.05) % Math.TAO);
       this.set('dx', Math.cos(this.get('dir')));
       return this.set('dy', Math.sin(this.get('dir')));
+    };
+
+    Robot.prototype.fire = function() {
+      var missile, missileView;
+      missile = new Missile({
+        id: this.missile,
+        x: this.get('x') + this.get('width') / 2,
+        y: this.get('y') + this.get('height') / 2,
+        dir: this.get('dir')
+      });
+      missileView = new MissileView({
+        model: missile
+      });
+      return this.missiles.push({
+        model: missile,
+        view: missileView
+      });
     };
 
     Robot.prototype.idle = function() {
@@ -153,7 +175,7 @@
       this.$el.css("left", this.model.get('x'));
       this.$el.css("top", this.model.get('y'));
       this.$el.css("transform", "rotate(" + this.model.deg() + "deg)");
-      this.$el.html("robot").appendTo('.arena');
+      this.$el.appendTo('.arena');
       return this;
     };
 
@@ -172,7 +194,7 @@
     RobotCommandView.prototype.className = 'commands';
 
     RobotCommandView.prototype.initialize = function() {
-      this.listenTo(this.model, 'change', this.render);
+      this.listenTo(this.model, 'change:[script]', this.render);
       this.listenTo(this.model, 'destroy', this.remove);
       $('.rightbar').append(this.$el);
       return this.render();

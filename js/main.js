@@ -10,7 +10,6 @@
         y: 40
       }
     });
-    console.log(robot);
     window.robotView = new RobotView({
       model: robot
     });

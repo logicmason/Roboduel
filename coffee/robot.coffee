@@ -9,7 +9,7 @@ class window.Robot extends Backbone.Model
     y: 0
     dx: 0
     dy: 0
-    frequency: 1000/30
+    frequency: 1000/15
     arena:
       width: 600
       height: 600
@@ -17,10 +17,15 @@ class window.Robot extends Backbone.Model
     height: 40
 
   initialize: ->
+    @missiles = []
+
     @set('script',  [
       "move"
-      "left"
       "move"
+      "move"
+      "move"
+      "left"
+      "fire"
       "idle"
     ])
     @set('lineNum', 0)
@@ -32,11 +37,10 @@ class window.Robot extends Backbone.Model
   minY: -> 0
   deg: -> @attributes.dir * 360 / Math.TAO
 
-
   noisy: false
 
   die: ->
-    console.log "#{@attributes.name} has died"
+    console.log "#{@attributes.name} has died" if @noisy
     clearInterval(@intervalID)
     @destroy()
 
@@ -47,7 +51,7 @@ class window.Robot extends Backbone.Model
 
   step: =>
     command = @attributes.script[@attributes.lineNum]
-    @[command]()
+    @[command]() if @[command]
     console.log("from Step()", @attributes) if @noisy
     @attributes.lineNum = (@attributes.lineNum + 1) % @attributes.script.length
 
@@ -66,14 +70,24 @@ class window.Robot extends Backbone.Model
     console.log("from Step()", @attributes) if @noisy
 
   left: ->
-    @set('dir', (@attributes.dir+0.02) % Math.TAO)
+    @set('dir', (@attributes.dir+0.05) % Math.TAO)
     @set('dx', Math.cos @get('dir'))
     @set('dy', Math.sin @get('dir'))
 
   right: ->
-    @set('dir', (Math.TAO + @attributes.dir-0.02) % Math.TAO)
+    @set('dir', (Math.TAO + @attributes.dir-0.05) % Math.TAO)
     @set('dx', Math.cos @get('dir'))
     @set('dy', Math.sin @get('dir'))
+
+  fire: ->
+    missile = new Missile({
+      id: @missile
+      x: @get('x')+@get('width')/2
+      y: @get('y')+@get('height')/2
+      dir: @get('dir')
+    })
+    missileView = new MissileView({model: missile})
+    @missiles.push {model: missile, view: missileView}
 
   idle: ->
     @
@@ -91,14 +105,14 @@ class window.RobotView extends Backbone.View
     @$el.css("left", @model.get('x'))
     @$el.css("top", @model.get('y'))
     @$el.css("transform", "rotate("+@model.deg()+"deg)")
-    @$el.html("robot").appendTo('.arena')
+    @$el.appendTo('.arena')
     @
 
 class window.RobotCommandView extends Backbone.View
   className: 'commands'
 
   initialize: ->
-    @listenTo(@model, 'change', @render)
+    @listenTo(@model, 'change:[script]', @render)
     @listenTo(@model, 'destroy', @remove)
     $('.rightbar').append(@$el)
     @render()
