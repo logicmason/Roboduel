@@ -7,17 +7,33 @@ body {
   font-size: 18px;
 }
 
+.main {
+  width: 1000px;
+}
+
 .arena {
+  float: left;
   width: 600px;
   height: 600px;
   position: relative;
   border-right: 1px solid black;
   border-top: 1px solid black;
   box-shadow: 0px 0px 5px 2px black inset;
-  margin-left: 10px;
-  margin-top: 10px;
+  margin: 10px;
   background-color:silver;
   border: 1px solid gray;
+}
+
+.rightbar {
+  padding: 10px;
+  margin-left: 620px;
+}
+
+.commands {
+  background: wheat;
+  margin:0 auto;
+  padding: 10px;
+  width: 300px;
 }
 
 img {

@@ -2,7 +2,7 @@ class window.Robot extends Backbone.Model
   defaults:
     dir: 0
     hp: 100
-    maxHP: 10
+    maxHP: 1
     damage: => console.log "ouch"
     name: "robot"
     x: 0
@@ -16,33 +16,40 @@ class window.Robot extends Backbone.Model
     width: 40
     height: 40
 
+  initialize: ->
+    @set('script',  [
+      "move"
+      "left"
+      "move"
+      "idle"
+    ])
+    @set('lineNum', 0)
+
+
   maxX: -> @attributes.arena.width - @attributes.width
   minX: -> 0
   maxY: -> @attributes.arena.height - @attributes.height
   minY: -> 0
+  deg: -> @attributes.dir * 360 / Math.TAO
 
-  script: [
-    "move"
-    "left"
-  ]
-  lineNum: 0
 
   noisy: false
 
   die: ->
     console.log "#{@attributes.name} has died"
-    trigger('die')
+    clearInterval(@intervalID)
+    @destroy()
 
   start: ->
-    setInterval =>
+    @intervalID = setInterval =>
       @step()
     ,@frequency
 
   step: =>
-    command = @script[@lineNum]
+    command = @attributes.script[@attributes.lineNum]
     @[command]()
-    console.log("from Step()", @attributes.position) if @noisy
-    @lineNum = (@lineNum + 1) % @script.length
+    console.log("from Step()", @attributes) if @noisy
+    @attributes.lineNum = (@attributes.lineNum + 1) % @attributes.script.length
 
   #Commands -- these are read from the script[] and executed in step()
   move: =>
@@ -59,12 +66,12 @@ class window.Robot extends Backbone.Model
     console.log("from Step()", @attributes) if @noisy
 
   left: ->
-    @set('dir', (@attributes.dir+0.01) % Math.TAO)
+    @set('dir', (@attributes.dir+0.02) % Math.TAO)
     @set('dx', Math.cos @get('dir'))
     @set('dy', Math.sin @get('dir'))
 
   right: ->
-    @set('dir', (Math.TAO + @attributes.dir-0.01) % Math.TAO)
+    @set('dir', (Math.TAO + @attributes.dir-0.02) % Math.TAO)
     @set('dx', Math.cos @get('dir'))
     @set('dy', Math.sin @get('dir'))
 
@@ -78,9 +85,29 @@ class window.RobotView extends Backbone.View
   initialize: =>
     console.log(@model)
     @listenTo(@model, 'change', @render)
+    @listenTo(@model, 'destroy', @remove)
 
   render: ->
     @$el.css("left", @model.get('x'))
     @$el.css("top", @model.get('y'))
+    @$el.css("transform", "rotate("+@model.deg()+"deg)")
     @$el.html("robot").appendTo('.arena')
     @
+
+class window.RobotCommandView extends Backbone.View
+  className: 'commands'
+
+  initialize: ->
+    @listenTo(@model, 'change', @render)
+    @listenTo(@model, 'destroy', @remove)
+    $('.rightbar').append(@$el)
+    @render()
+
+  render: ->
+    @$el.html("<h3>#{@model.get('name')}'s control program</h3>")
+    @$el.append("<ol>")
+    for x in @model.get('script')
+      @$el.append("<li>#{x}</li>")
+    @$el.append("</ol>")
+    @
+

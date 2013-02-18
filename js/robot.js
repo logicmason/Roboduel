@@ -19,7 +19,7 @@
     Robot.prototype.defaults = {
       dir: 0,
       hp: 100,
-      maxHP: 10,
+      maxHP: 1,
       damage: function() {
         return console.log("ouch");
       },
@@ -35,6 +35,11 @@
       },
       width: 40,
       height: 40
+    };
+
+    Robot.prototype.initialize = function() {
+      this.set('script', ["move", "left", "move", "idle"]);
+      return this.set('lineNum', 0);
     };
 
     Robot.prototype.maxX = function() {
@@ -53,32 +58,33 @@
       return 0;
     };
 
-    Robot.prototype.script = ["move", "left"];
-
-    Robot.prototype.lineNum = 0;
+    Robot.prototype.deg = function() {
+      return this.attributes.dir * 360 / Math.TAO;
+    };
 
     Robot.prototype.noisy = false;
 
     Robot.prototype.die = function() {
       console.log("" + this.attributes.name + " has died");
-      return trigger('die');
+      clearInterval(this.intervalID);
+      return this.destroy();
     };
 
     Robot.prototype.start = function() {
       var _this = this;
-      return setInterval(function() {
+      return this.intervalID = setInterval(function() {
         return _this.step();
       }, this.frequency);
     };
 
     Robot.prototype.step = function() {
       var command;
-      command = this.script[this.lineNum];
+      command = this.attributes.script[this.attributes.lineNum];
       this[command]();
       if (this.noisy) {
-        console.log("from Step()", this.attributes.position);
+        console.log("from Step()", this.attributes);
       }
-      return this.lineNum = (this.lineNum + 1) % this.script.length;
+      return this.attributes.lineNum = (this.attributes.lineNum + 1) % this.attributes.script.length;
     };
 
     Robot.prototype.move = function() {
@@ -107,13 +113,13 @@
     };
 
     Robot.prototype.left = function() {
-      this.set('dir', (this.attributes.dir + 0.01) % Math.TAO);
+      this.set('dir', (this.attributes.dir + 0.02) % Math.TAO);
       this.set('dx', Math.cos(this.get('dir')));
       return this.set('dy', Math.sin(this.get('dir')));
     };
 
     Robot.prototype.right = function() {
-      this.set('dir', (Math.TAO + this.attributes.dir - 0.01) % Math.TAO);
+      this.set('dir', (Math.TAO + this.attributes.dir - 0.02) % Math.TAO);
       this.set('dx', Math.cos(this.get('dir')));
       return this.set('dy', Math.sin(this.get('dir')));
     };
@@ -139,17 +145,53 @@
 
     RobotView.prototype.initialize = function() {
       console.log(this.model);
-      return this.listenTo(this.model, 'change', this.render);
+      this.listenTo(this.model, 'change', this.render);
+      return this.listenTo(this.model, 'destroy', this.remove);
     };
 
     RobotView.prototype.render = function() {
       this.$el.css("left", this.model.get('x'));
       this.$el.css("top", this.model.get('y'));
+      this.$el.css("transform", "rotate(" + this.model.deg() + "deg)");
       this.$el.html("robot").appendTo('.arena');
       return this;
     };
 
     return RobotView;
+
+  })(Backbone.View);
+
+  window.RobotCommandView = (function(_super) {
+
+    __extends(RobotCommandView, _super);
+
+    function RobotCommandView() {
+      return RobotCommandView.__super__.constructor.apply(this, arguments);
+    }
+
+    RobotCommandView.prototype.className = 'commands';
+
+    RobotCommandView.prototype.initialize = function() {
+      this.listenTo(this.model, 'change', this.render);
+      this.listenTo(this.model, 'destroy', this.remove);
+      $('.rightbar').append(this.$el);
+      return this.render();
+    };
+
+    RobotCommandView.prototype.render = function() {
+      var x, _i, _len, _ref;
+      this.$el.html("<h3>" + (this.model.get('name')) + "'s control program</h3>");
+      this.$el.append("<ol>");
+      _ref = this.model.get('script');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        x = _ref[_i];
+        this.$el.append("<li>" + x + "</li>");
+      }
+      this.$el.append("</ol>");
+      return this;
+    };
+
+    return RobotCommandView;
 
   })(Backbone.View);
 
