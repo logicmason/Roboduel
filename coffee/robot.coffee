@@ -3,7 +3,7 @@ class window.Robot extends Backbone.Model
     dir: 0
     hp: 100
     maxHP: 1
-    damage: => console.log "ouch"
+    damage: 5
     name: "robot"
     x: 0
     y: 0
@@ -17,8 +17,6 @@ class window.Robot extends Backbone.Model
     height: 40
 
   initialize: ->
-    @missiles = []
-
     @set('script',  [
       "move"
       "move"
@@ -27,7 +25,7 @@ class window.Robot extends Backbone.Model
       "left"
       "fire"
       "idle"
-    ])
+    ]) unless @attributes.script
     @set('lineNum', 0)
 
 
@@ -36,6 +34,8 @@ class window.Robot extends Backbone.Model
   maxY: -> @attributes.arena.height - @attributes.height
   minY: -> 0
   deg: -> @attributes.dir * 360 / Math.TAO
+  centerX: -> @attributes.x + @attributes.width/2
+  centerY: -> @attributes.y + @attributes.height/2
 
   noisy: false
 
@@ -50,10 +50,29 @@ class window.Robot extends Backbone.Model
     ,@frequency
 
   step: =>
+    @collisionCheck()
+
     command = @attributes.script[@attributes.lineNum]
     @[command]() if @[command]
     console.log("from Step()", @attributes) if @noisy
     @attributes.lineNum = (@attributes.lineNum + 1) % @attributes.script.length
+
+  collisionCheck: =>
+    window.silo.each((missile)=>
+      mLeft = missile.get('x') + missile.dx()*2
+      mRight = missile.get('x') + missile.get('width') + missile.dx()*2
+      rLeft = @get('x')
+      rRight = @get('x') + @get('width')
+
+      mTop = missile.get('y') + missile.dy()*2
+      mBottom = missile.get('y') + missile.get('height') + missile.dy()*2
+      rTop = @get('y')
+      rBottom = @get('y') + @get('height')
+
+      if ((mRight > rLeft) and (mLeft < rRight) and
+          (mTop < rBottom) and (mBottom > rTop))
+            console.log([mLeft,mRight,mTop,mBottom])
+          )
 
   #Commands -- these are read from the script[] and executed in step()
   move: =>
@@ -69,25 +88,27 @@ class window.Robot extends Backbone.Model
     @set('y', newy)
     console.log("from Step()", @attributes) if @noisy
 
-  left: ->
-    @set('dir', (@attributes.dir+0.05) % Math.TAO)
+  right: ->
+    @set('dir', (@attributes.dir+0.03) % Math.TAO)
     @set('dx', Math.cos @get('dir'))
     @set('dy', Math.sin @get('dir'))
 
-  right: ->
-    @set('dir', (Math.TAO + @attributes.dir-0.05) % Math.TAO)
+  left: ->
+    @set('dir', (Math.TAO + @attributes.dir-0.03) % Math.TAO)
     @set('dx', Math.cos @get('dir'))
     @set('dy', Math.sin @get('dir'))
 
   fire: ->
+    mult = 20
     missile = new Missile({
       id: @missile
-      x: @get('x')+@get('width')/2
-      y: @get('y')+@get('height')/2
+      x: @get('x')+@get('width')/2 + Math.cos(@get('dir')) * mult
+      y: @get('y')+@get('height')/2 + Math.sin(@get('dir')) * mult
       dir: @get('dir')
+      damage: @damage
     })
     missileView = new MissileView({model: missile})
-    @missiles.push {model: missile, view: missileView}
+    window.silo.add(missile)
 
   idle: ->
     @
@@ -112,7 +133,7 @@ class window.RobotCommandView extends Backbone.View
   className: 'commands'
 
   initialize: ->
-    @listenTo(@model, 'change:[script]', @render)
+    @listenTo(@model, 'change:script', @render)
     @listenTo(@model, 'destroy', @remove)
     $('.rightbar').append(@$el)
     @render()

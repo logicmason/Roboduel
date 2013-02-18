@@ -17,20 +17,23 @@ class window.Missile extends Backbone.Model
   maxY: -> @attributes.arena.height - @attributes.height
   minY: -> 0
   deg: -> @attributes.dir * 360 / Math.TAO
+  dx: -> (Math.cos @get('dir')) * 10
+  dy: -> (Math.sin @get('dir')) * 10
 
   initialize: ->
+    @set('x', @attributes.x - @attributes.width/2)
+    @set('y', @attributes.y - @attributes.height/2)
     @set('script',  [
       "move"
     ])
     @set('lineNum', 0)
-    @set('dx', Math.cos @get('dir'))
-    @set('dy', Math.sin @get('dir'))
     @start()
 
   die: ->
     console.log "missile destroyed" if @noisy
     clearInterval(@intervalID)
     @destroy()
+    window.silo.remove(@)
 
   start: ->
     @intervalID = setInterval =>
@@ -45,12 +48,10 @@ class window.Missile extends Backbone.Model
 
   #Commands -- these are read from the script[] and executed in step()
   move: =>
-    dx = (Math.cos @get('dir')) * 10
-    dy = (Math.sin @get('dir')) * 10
-    newx = @attributes.x + dx
+    newx = @attributes.x + @dx()
     @die() if newx > @maxX()
     @die() if newx < @minX()
-    newy = @attributes.y + dy
+    newy = @attributes.y + @dy()
     @die() if newy > @maxY()
     @die() if newy < @minY()
     @set('x', newx)

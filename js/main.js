@@ -4,6 +4,7 @@
   Math.TAO = Math.PI * 2;
 
   $(document).ready(function() {
+    window.silo = new MissileCollection({});
     window.robot = new Robot({
       position: {
         x: 20,

@@ -5,12 +5,13 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   window.Robot = (function(_super) {
-    var _this = this;
 
     __extends(Robot, _super);
 
     function Robot() {
       this.move = __bind(this.move, this);
+
+      this.collisionCheck = __bind(this.collisionCheck, this);
 
       this.step = __bind(this.step, this);
       return Robot.__super__.constructor.apply(this, arguments);
@@ -20,9 +21,7 @@
       dir: 0,
       hp: 100,
       maxHP: 1,
-      damage: function() {
-        return console.log("ouch");
-      },
+      damage: 5,
       name: "robot",
       x: 0,
       y: 0,
@@ -38,8 +37,9 @@
     };
 
     Robot.prototype.initialize = function() {
-      this.missiles = [];
-      this.set('script', ["move", "move", "move", "move", "left", "fire", "idle"]);
+      if (!this.attributes.script) {
+        this.set('script', ["move", "move", "move", "move", "left", "fire", "idle"]);
+      }
       return this.set('lineNum', 0);
     };
 
@@ -63,6 +63,14 @@
       return this.attributes.dir * 360 / Math.TAO;
     };
 
+    Robot.prototype.centerX = function() {
+      return this.attributes.x + this.attributes.width / 2;
+    };
+
+    Robot.prototype.centerY = function() {
+      return this.attributes.y + this.attributes.height / 2;
+    };
+
     Robot.prototype.noisy = false;
 
     Robot.prototype.die = function() {
@@ -82,6 +90,7 @@
 
     Robot.prototype.step = function() {
       var command;
+      this.collisionCheck();
       command = this.attributes.script[this.attributes.lineNum];
       if (this[command]) {
         this[command]();
@@ -90,6 +99,24 @@
         console.log("from Step()", this.attributes);
       }
       return this.attributes.lineNum = (this.attributes.lineNum + 1) % this.attributes.script.length;
+    };
+
+    Robot.prototype.collisionCheck = function() {
+      var _this = this;
+      return window.silo.each(function(missile) {
+        var mBottom, mLeft, mRight, mTop, rBottom, rLeft, rRight, rTop;
+        mLeft = missile.get('x') + missile.dx() * 2;
+        mRight = missile.get('x') + missile.get('width') + missile.dx() * 2;
+        rLeft = _this.get('x');
+        rRight = _this.get('x') + _this.get('width');
+        mTop = missile.get('y') + missile.dy() * 2;
+        mBottom = missile.get('y') + missile.get('height') + missile.dy() * 2;
+        rTop = _this.get('y');
+        rBottom = _this.get('y') + _this.get('height');
+        if ((mRight > rLeft) && (mLeft < rRight) && (mTop < rBottom) && (mBottom > rTop)) {
+          return console.log([mLeft, mRight, mTop, mBottom]);
+        }
+      });
     };
 
     Robot.prototype.move = function() {
@@ -117,33 +144,32 @@
       }
     };
 
-    Robot.prototype.left = function() {
-      this.set('dir', (this.attributes.dir + 0.05) % Math.TAO);
+    Robot.prototype.right = function() {
+      this.set('dir', (this.attributes.dir + 0.03) % Math.TAO);
       this.set('dx', Math.cos(this.get('dir')));
       return this.set('dy', Math.sin(this.get('dir')));
     };
 
-    Robot.prototype.right = function() {
-      this.set('dir', (Math.TAO + this.attributes.dir - 0.05) % Math.TAO);
+    Robot.prototype.left = function() {
+      this.set('dir', (Math.TAO + this.attributes.dir - 0.03) % Math.TAO);
       this.set('dx', Math.cos(this.get('dir')));
       return this.set('dy', Math.sin(this.get('dir')));
     };
 
     Robot.prototype.fire = function() {
-      var missile, missileView;
+      var missile, missileView, mult;
+      mult = 20;
       missile = new Missile({
         id: this.missile,
-        x: this.get('x') + this.get('width') / 2,
-        y: this.get('y') + this.get('height') / 2,
-        dir: this.get('dir')
+        x: this.get('x') + this.get('width') / 2 + Math.cos(this.get('dir')) * mult,
+        y: this.get('y') + this.get('height') / 2 + Math.sin(this.get('dir')) * mult,
+        dir: this.get('dir'),
+        damage: this.damage
       });
       missileView = new MissileView({
         model: missile
       });
-      return this.missiles.push({
-        model: missile,
-        view: missileView
-      });
+      return window.silo.add(missile);
     };
 
     Robot.prototype.idle = function() {
@@ -152,7 +178,7 @@
 
     return Robot;
 
-  }).call(this, Backbone.Model);
+  })(Backbone.Model);
 
   window.RobotView = (function(_super) {
 
@@ -194,7 +220,7 @@
     RobotCommandView.prototype.className = 'commands';
 
     RobotCommandView.prototype.initialize = function() {
-      this.listenTo(this.model, 'change:[script]', this.render);
+      this.listenTo(this.model, 'change:script', this.render);
       this.listenTo(this.model, 'destroy', this.remove);
       $('.rightbar').append(this.$el);
       return this.render();

@@ -50,11 +50,19 @@
       return this.attributes.dir * 360 / Math.TAO;
     };
 
+    Missile.prototype.dx = function() {
+      return (Math.cos(this.get('dir'))) * 10;
+    };
+
+    Missile.prototype.dy = function() {
+      return (Math.sin(this.get('dir'))) * 10;
+    };
+
     Missile.prototype.initialize = function() {
+      this.set('x', this.attributes.x - this.attributes.width / 2);
+      this.set('y', this.attributes.y - this.attributes.height / 2);
       this.set('script', ["move"]);
       this.set('lineNum', 0);
-      this.set('dx', Math.cos(this.get('dir')));
-      this.set('dy', Math.sin(this.get('dir')));
       return this.start();
     };
 
@@ -63,7 +71,8 @@
         console.log("missile destroyed");
       }
       clearInterval(this.intervalID);
-      return this.destroy();
+      this.destroy();
+      return window.silo.remove(this);
     };
 
     Missile.prototype.start = function() {
@@ -84,17 +93,15 @@
     };
 
     Missile.prototype.move = function() {
-      var dx, dy, newx, newy;
-      dx = (Math.cos(this.get('dir'))) * 10;
-      dy = (Math.sin(this.get('dir'))) * 10;
-      newx = this.attributes.x + dx;
+      var newx, newy;
+      newx = this.attributes.x + this.dx();
       if (newx > this.maxX()) {
         this.die();
       }
       if (newx < this.minX()) {
         this.die();
       }
-      newy = this.attributes.y + dy;
+      newy = this.attributes.y + this.dy();
       if (newy > this.maxY()) {
         this.die();
       }
