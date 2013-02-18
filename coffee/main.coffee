@@ -1,8 +1,20 @@
 Math.TAO = Math.PI * 2
 
-$(document).ready ->
-  window.silo = new MissileCollection({})
-  window.robot = new Robot({position: {x: 20, y: 40}})
-  window.robotView = new RobotView({model: robot})
+class window.Game extends Backbone.Model
 
-  $('.arena').append(robotView.render().el)
+  initialize: ->
+    $(document).ready ->
+    window.silo = new MissileCollection({})
+
+  addRobot: (options)->
+    r = new Robot(options)
+    rView = new RobotView({model: r})
+    cmdv = new RobotCommandView({model: r})
+    r.start()
+    cmdv.render()
+    $('.arena').append(rView.render().el)
+
+$(document).ready ->
+  window.game = new Game()
+  $('.addRobot').click(game.addRobot)
+  game.addRobot({name: "somebot"})

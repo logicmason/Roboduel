@@ -18,15 +18,19 @@ class window.Robot extends Backbone.Model
 
   initialize: ->
     @set('hp', defaults["hp"]) unless @attributes.hp
-    @set('script',  [
-      "move"
-      "move"
-      "move"
-      "move"
-      "left"
-      "fire"
-      "idle"
-    ]) unless @attributes.script
+    @set('x', Math.random()* @maxX()) unless @attributes.x
+    @set('y', Math.random()* @maxY()) unless @attributes.y
+    unless @attributes.script
+      commands = []
+      _(6).times(->
+        num = Math.floor(Math.random()*5)
+        commands.push "move" if num == 0
+        commands.push "left" if num == 1
+        commands.push "right" if num == 2
+        commands.push "fire" if num == 3
+        commands.push "idle" if num == 4
+      )
+      @set('script',  commands)
     @set('lineNum', 0)
 
 
@@ -163,7 +167,7 @@ class window.RobotCommandView extends Backbone.View
 
   render: ->
     @$el.html('<div class="editButton">Edit</div>')
-    @$el.append('<h3 class="heading">'+"#{@model.get('name')}'s control program</h3>")
+    @$el.append('<h3 class="heading">'+"#{@model.get('name')}'s program</h3>")
     @$el.append("<ol>")
     for x in @model.get('script')
       @$el.append("<li>#{x}</li>")
@@ -173,7 +177,7 @@ class window.RobotCommandView extends Backbone.View
 
   renderInput: ->
     @$el.html('<div class="editButton">Done</div>')
-    @$el.append('<h3 class="heading">'+"#{@model.get('name')}'s control program</h3>")
+    @$el.append('<h3 class="heading">'+"#{@model.get('name')}'s program</h3>")
     area = ('<textarea>')
     for x in @model.get('script')
       area += ("\n#{x}")

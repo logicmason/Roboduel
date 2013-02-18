@@ -37,11 +37,38 @@
     };
 
     Robot.prototype.initialize = function() {
+      var commands;
       if (!this.attributes.hp) {
         this.set('hp', defaults["hp"]);
       }
+      if (!this.attributes.x) {
+        this.set('x', Math.random() * this.maxX());
+      }
+      if (!this.attributes.y) {
+        this.set('y', Math.random() * this.maxY());
+      }
       if (!this.attributes.script) {
-        this.set('script', ["move", "move", "move", "move", "left", "fire", "idle"]);
+        commands = [];
+        _(6).times(function() {
+          var num;
+          num = Math.floor(Math.random() * 5);
+          if (num === 0) {
+            commands.push("move");
+          }
+          if (num === 1) {
+            commands.push("left");
+          }
+          if (num === 2) {
+            commands.push("right");
+          }
+          if (num === 3) {
+            commands.push("fire");
+          }
+          if (num === 4) {
+            return commands.push("idle");
+          }
+        });
+        this.set('script', commands);
       }
       return this.set('lineNum', 0);
     };
@@ -266,7 +293,7 @@
     RobotCommandView.prototype.render = function() {
       var x, _i, _len, _ref;
       this.$el.html('<div class="editButton">Edit</div>');
-      this.$el.append('<h3 class="heading">' + ("" + (this.model.get('name')) + "'s control program</h3>"));
+      this.$el.append('<h3 class="heading">' + ("" + (this.model.get('name')) + "'s program</h3>"));
       this.$el.append("<ol>");
       _ref = this.model.get('script');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -281,7 +308,7 @@
     RobotCommandView.prototype.renderInput = function() {
       var area, x, _i, _len, _ref;
       this.$el.html('<div class="editButton">Done</div>');
-      this.$el.append('<h3 class="heading">' + ("" + (this.model.get('name')) + "'s control program</h3>"));
+      this.$el.append('<h3 class="heading">' + ("" + (this.model.get('name')) + "'s program</h3>"));
       area = '<textarea>';
       _ref = this.model.get('script');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
