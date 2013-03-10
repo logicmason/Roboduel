@@ -5,8 +5,6 @@ expression =
   grammatical
   /mathExp
   /atom
-  /"(" space* first:expression rest:spacedExpr* space* ")"
-  { return [first].concat(rest) ;}
 
 grammatical =
   check
@@ -16,9 +14,12 @@ grammatical =
   /set
   /spacedCommand
   /comparison
+  /"(" first:spacedExpr rest:spacedExpr* ")"
+  { return [first].concat(rest) ;}
+
 
 check =
-  "check" space* c:spacedExpr "yes:"space* y:grammatical "no:"space* n:grammatical space*
+  "check" space* c:spacedExpr "yes:"space* y:grammatical space* "no:"space* n:grammatical space*
   { return ["check", c, y, n]; }
 
 until =

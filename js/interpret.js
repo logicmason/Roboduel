@@ -2,7 +2,7 @@
 (function() {
 
   window.roboEval = function(expr, env) {
-    var _results;
+    var item, _i, _len, _results;
     if (env == null) {
       env = {};
     }
@@ -11,6 +11,17 @@
     }
     if (typeof expr === 'string') {
       return env[expr];
+    }
+    if (Object.prototype.toString.call(expr[0]) === '[object Array]') {
+      if (expr.length === 1) {
+        return roboEval(expr[0], env);
+      } else {
+        for (_i = 0, _len = expr.length; _i < _len; _i++) {
+          item = expr[_i];
+          console.log(item);
+          roboEval(item, env);
+        }
+      }
     }
     switch (expr[0]) {
       case 'set':
@@ -55,10 +66,11 @@
       case 'both':
         roboEval(expr[1], env);
         return roboEval(expr[2], env);
-      case repeat:
+      case 'until':
         _results = [];
-        while (roboEval(expr[1]) === '#t') {
-          _results.push(roboEval(expr[2]));
+        while (roboEval(expr[1], env) === '#f') {
+          roboEval(expr[2], env);
+          _results.push(console.log(expr));
         }
         return _results;
     }

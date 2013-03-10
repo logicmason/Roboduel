@@ -1,6 +1,13 @@
 window.roboEval = (expr, env={})->
   return expr if (typeof expr == 'number')
   return env[expr] if (typeof expr == 'string')
+  if Object.prototype.toString.call(expr[0]) == '[object Array]'
+    if expr.length == 1
+      return roboEval(expr[0], env)
+    else
+      for item in expr
+        console.log item
+        roboEval(item, env)
 
   switch (expr[0])
     when 'set'
@@ -33,7 +40,7 @@ window.roboEval = (expr, env={})->
     when 'both'
       roboEval(expr[1], env)
       roboEval(expr[2], env)
-    when repeat
-      while (roboEval(expr[1]) == '#t')
-        roboEval(expr[2])
-
+    when 'until'
+      while (roboEval(expr[1], env) == '#f')
+        roboEval(expr[2], env)
+        console.log expr
