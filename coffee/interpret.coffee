@@ -37,10 +37,10 @@ window.roboEval = (expr, env={})->
         roboEval(expr[2], env)
       else if '#f'
         roboEval(expr[3], env)
-    when 'both'
-      roboEval(expr[1], env)
-      roboEval(expr[2], env)
-    when 'until'
-      while (roboEval(expr[1], env) == '#f')
-        roboEval(expr[2], env)
-        console.log expr
+    # when 'both'
+    #   roboEval(expr[1], env)
+    #   roboEval(expr[2], env)
+    # when 'until'
+    #   while (roboEval(expr[1], env) == '#f')
+    #     roboEval(expr[2], env)
+    #     console.log expr

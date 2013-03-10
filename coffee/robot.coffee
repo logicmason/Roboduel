@@ -31,6 +31,7 @@ class window.Robot extends Backbone.Model
         commands.push "idle" if num == 4
       )
       @set('script',  commands)
+    @set('source', @script)
     @set('lineNum', 0)
 
 
@@ -48,6 +49,7 @@ class window.Robot extends Backbone.Model
     console.log "#{@attributes.name} has died" if @noisy
     clearInterval(@intervalID)
     @destroy()
+    window.robotorium.remove(@)
 
   start: ->
     @intervalID = setInterval =>
@@ -58,7 +60,8 @@ class window.Robot extends Backbone.Model
     @collisionCheck()
 
     command = @attributes.script[@attributes.lineNum]
-    @[command]() if @[command]
+    evaledCommand = roboEval(command, window.game.env);
+    @[evaledCommand]() if @[evaledCommand]
     console.log("from Step()", @attributes) if @noisy
     @attributes.lineNum = (@attributes.lineNum + 1) % @attributes.script.length
 
@@ -161,7 +164,9 @@ class window.RobotCommandView extends Backbone.View
     if @display == "standard"
       @renderInput()
     else if @display == "input"
-      @model.set('script', @$('textarea').val().split("\n"))
+      @model.set('source', @$('textarea').val())
+      parsedCommands = parseRobot(@model.get('source'))
+      @model.set('script', parsedCommands)
       @render()
     console.log "#{@display} display"
 
@@ -179,8 +184,7 @@ class window.RobotCommandView extends Backbone.View
     @$el.html('<div class="editButton">Done</div>')
     @$el.append('<h3 class="heading">'+"#{@model.get('name')}'s program</h3>")
     area = ('<textarea>')
-    for x in @model.get('script')
-      area += ("\n#{x}")
+    area += @model.get('source')
     @$el.append(area+'</textarea>')
     @display = 'input'
     @
