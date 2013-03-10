@@ -94,5 +94,5 @@ primary
   /atom
 
 integer =
-  digits:[0-9]+
-  { return parseInt(digits.join(""), 10); }
+  sign:"-"? digits:[0-9]+
+  { return parseInt(sign+digits.join(""), 10); }

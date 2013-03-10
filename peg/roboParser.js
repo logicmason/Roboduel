@@ -4,7 +4,7 @@ window.parseRobot = (function(){
    *
    * http://pegjs.majda.cz/
    */
-  
+
   function quote(s) {
     /*
      * ECMA-262, 5th ed., 7.8.4: All characters may appear literally in a
@@ -27,7 +27,7 @@ window.parseRobot = (function(){
       .replace(/[\x00-\x07\x0B\x0E-\x1F\x80-\uFFFF]/g, escape)
       + '"';
   }
-  
+
   var result = {
     /*
      * Parses the input with a generated parser. If the parsing is successfull,
@@ -58,7 +58,7 @@ window.parseRobot = (function(){
         "primary": parse_primary,
         "integer": parse_integer
       };
-      
+
       if (startRule !== undefined) {
         if (parseFunctions[startRule] === undefined) {
           throw new Error("Invalid rule name: " + quote(startRule) + ".");
@@ -66,28 +66,28 @@ window.parseRobot = (function(){
       } else {
         startRule = "start";
       }
-      
+
       var pos = 0;
       var reportFailures = 0;
       var rightmostFailuresPos = 0;
       var rightmostFailuresExpected = [];
-      
+
       function padLeft(input, padding, length) {
         var result = input;
-        
+
         var padLength = length - input.length;
         for (var i = 0; i < padLength; i++) {
           result = padding + result;
         }
-        
+
         return result;
       }
-      
+
       function escape(ch) {
         var charCode = ch.charCodeAt(0);
         var escapeChar;
         var length;
-        
+
         if (charCode <= 0xFF) {
           escapeChar = 'x';
           length = 2;
@@ -95,26 +95,26 @@ window.parseRobot = (function(){
           escapeChar = 'u';
           length = 4;
         }
-        
+
         return '\\' + escapeChar + padLeft(charCode.toString(16).toUpperCase(), '0', length);
       }
-      
+
       function matchFailed(failure) {
         if (pos < rightmostFailuresPos) {
           return;
         }
-        
+
         if (pos > rightmostFailuresPos) {
           rightmostFailuresPos = pos;
           rightmostFailuresExpected = [];
         }
-        
+
         rightmostFailuresExpected.push(failure);
       }
-      
+
       function parse_start() {
         var result0, result1;
-        
+
         result0 = [];
         result1 = parse_grammatical();
         while (result1 !== null) {
@@ -123,11 +123,11 @@ window.parseRobot = (function(){
         }
         return result0;
       }
-      
+
       function parse_expression() {
         var result0, result1, result2, result3, result4, result5;
         var pos0, pos1;
-        
+
         result0 = parse_grammatical();
         if (result0 === null) {
           result0 = parse_additive();
@@ -215,10 +215,10 @@ window.parseRobot = (function(){
         }
         return result0;
       }
-      
+
       function parse_grammatical() {
         var result0;
-        
+
         result0 = parse_check();
         if (result0 === null) {
           result0 = parse_until();
@@ -240,11 +240,11 @@ window.parseRobot = (function(){
         }
         return result0;
       }
-      
+
       function parse_check() {
         var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9, result10;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 5) === "check") {
@@ -360,11 +360,11 @@ window.parseRobot = (function(){
         }
         return result0;
       }
-      
+
       function parse_until() {
         var result0, result1, result2;
         var pos0;
-        
+
         pos0 = pos;
         if (input.substr(pos, 5) === "until") {
           result0 = "until";
@@ -395,11 +395,11 @@ window.parseRobot = (function(){
         }
         return result0;
       }
-      
+
       function parse_both() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 5) === "both:") {
@@ -451,11 +451,11 @@ window.parseRobot = (function(){
         }
         return result0;
       }
-      
+
       function parse_either() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 7) === "either:") {
@@ -507,11 +507,11 @@ window.parseRobot = (function(){
         }
         return result0;
       }
-      
+
       function parse_set() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         if (input.substr(pos, 3) === "set") {
@@ -578,11 +578,11 @@ window.parseRobot = (function(){
         }
         return result0;
       }
-      
+
       function parse_comparison() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_additive();
@@ -763,11 +763,11 @@ window.parseRobot = (function(){
         }
         return result0;
       }
-      
+
       function parse_spacedExpr() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = [];
@@ -807,10 +807,10 @@ window.parseRobot = (function(){
         }
         return result0;
       }
-      
+
       function parse_bool() {
         var result0;
-        
+
         if (input.substr(pos, 4) === "true") {
           result0 = "true";
           pos += 4;
@@ -833,10 +833,10 @@ window.parseRobot = (function(){
         }
         return result0;
       }
-      
+
       function parse_validchar() {
         var result0;
-        
+
         if (/^[0-9a-zA-Z_?!@#$%^&.]/.test(input.charAt(pos))) {
           result0 = input.charAt(pos);
           pos++;
@@ -848,11 +848,11 @@ window.parseRobot = (function(){
         }
         return result0;
       }
-      
+
       function parse_atom() {
         var result0, result1;
         var pos0;
-        
+
         pos0 = pos;
         result1 = parse_validchar();
         if (result1 !== null) {
@@ -872,11 +872,11 @@ window.parseRobot = (function(){
         }
         return result0;
       }
-      
+
       function parse_spacedCommand() {
         var result0, result1, result2, result3;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = [];
@@ -916,10 +916,10 @@ window.parseRobot = (function(){
         }
         return result0;
       }
-      
+
       function parse_space() {
         var result0;
-        
+
         if (input.charCodeAt(pos) === 32) {
           result0 = " ";
           pos++;
@@ -953,10 +953,10 @@ window.parseRobot = (function(){
         }
         return result0;
       }
-      
+
       function parse_command() {
         var result0;
-        
+
         if (input.substr(pos, 4) === "move") {
           result0 = "move";
           pos += 4;
@@ -1012,11 +1012,11 @@ window.parseRobot = (function(){
         }
         return result0;
       }
-      
+
       function parse_additive() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_multiplicative();
@@ -1138,11 +1138,11 @@ window.parseRobot = (function(){
         }
         return result0;
       }
-      
+
       function parse_multiplicative() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         pos0 = pos;
         pos1 = pos;
         result0 = parse_primary();
@@ -1264,11 +1264,11 @@ window.parseRobot = (function(){
         }
         return result0;
       }
-      
+
       function parse_primary() {
         var result0, result1, result2, result3, result4;
         var pos0, pos1;
-        
+
         result0 = parse_integer();
         if (result0 === null) {
           pos0 = pos;
@@ -1342,51 +1342,73 @@ window.parseRobot = (function(){
         }
         return result0;
       }
-      
+
       function parse_integer() {
-        var result0, result1;
-        var pos0;
-        
+        var result0, result1, result2;
+        var pos0, pos1;
+
         pos0 = pos;
-        if (/^[0-9]/.test(input.charAt(pos))) {
-          result1 = input.charAt(pos);
+        pos1 = pos;
+        if (input.charCodeAt(pos) === 45) {
+          result0 = "-";
           pos++;
         } else {
-          result1 = null;
+          result0 = null;
           if (reportFailures === 0) {
-            matchFailed("[0-9]");
+            matchFailed("\"-\"");
           }
         }
-        if (result1 !== null) {
-          result0 = [];
-          while (result1 !== null) {
-            result0.push(result1);
-            if (/^[0-9]/.test(input.charAt(pos))) {
-              result1 = input.charAt(pos);
-              pos++;
-            } else {
-              result1 = null;
-              if (reportFailures === 0) {
-                matchFailed("[0-9]");
+        result0 = result0 !== null ? result0 : "";
+        if (result0 !== null) {
+          if (/^[0-9]/.test(input.charAt(pos))) {
+            result2 = input.charAt(pos);
+            pos++;
+          } else {
+            result2 = null;
+            if (reportFailures === 0) {
+              matchFailed("[0-9]");
+            }
+          }
+          if (result2 !== null) {
+            result1 = [];
+            while (result2 !== null) {
+              result1.push(result2);
+              if (/^[0-9]/.test(input.charAt(pos))) {
+                result2 = input.charAt(pos);
+                pos++;
+              } else {
+                result2 = null;
+                if (reportFailures === 0) {
+                  matchFailed("[0-9]");
+                }
               }
             }
+          } else {
+            result1 = null;
+          }
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = pos1;
           }
         } else {
           result0 = null;
+          pos = pos1;
         }
         if (result0 !== null) {
-          result0 = (function(offset, digits) { return parseInt(digits.join(""), 10); })(pos0, result0);
+          result0 = (function(offset, sign, digits) { return parseInt(sign+digits.join(""), 10); })(pos0, result0[0], result0[1]);
         }
         if (result0 === null) {
           pos = pos0;
         }
         return result0;
       }
-      
-      
+
+
       function cleanupExpected(expected) {
         expected.sort();
-        
+
         var lastExpected = null;
         var cleanExpected = [];
         for (var i = 0; i < expected.length; i++) {
@@ -1397,7 +1419,7 @@ window.parseRobot = (function(){
         }
         return cleanExpected;
       }
-      
+
       function computeErrorPosition() {
         /*
          * The first idea was to use |String.split| to break the input up to the
@@ -1405,11 +1427,11 @@ window.parseRobot = (function(){
          * there. However IE's |split| implementation is so broken that it was
          * enough to prevent it.
          */
-        
+
         var line = 1;
         var column = 1;
         var seenCR = false;
-        
+
         for (var i = 0; i < Math.max(pos, rightmostFailuresPos); i++) {
           var ch = input.charAt(i);
           if (ch === "\n") {
@@ -1425,13 +1447,13 @@ window.parseRobot = (function(){
             seenCR = false;
           }
         }
-        
+
         return { line: line, column: column };
       }
-      
-      
+
+
       var result = parseFunctions[startRule]();
-      
+
       /*
        * The parser is now in one of the following three states:
        *
@@ -1460,7 +1482,7 @@ window.parseRobot = (function(){
         var offset = Math.max(pos, rightmostFailuresPos);
         var found = offset < input.length ? input.charAt(offset) : null;
         var errorPosition = computeErrorPosition();
-        
+
         throw new this.SyntaxError(
           cleanupExpected(rightmostFailuresExpected),
           found,
@@ -1469,20 +1491,20 @@ window.parseRobot = (function(){
           errorPosition.column
         );
       }
-      
+
       return result;
     },
-    
+
     /* Returns the parser source code. */
     toSource: function() { return this._source; }
   };
-  
+
   /* Thrown when a parser encounters a syntax error. */
-  
+
   result.SyntaxError = function(expected, found, offset, line, column) {
     function buildMessage(expected, found) {
       var expectedHumanized, foundHumanized;
-      
+
       switch (expected.length) {
         case 0:
           expectedHumanized = "end of input";
@@ -1495,12 +1517,12 @@ window.parseRobot = (function(){
             + " or "
             + expected[expected.length - 1];
       }
-      
+
       foundHumanized = found ? quote(found) : "end of input";
-      
+
       return "Expected " + expectedHumanized + " but " + foundHumanized + " found.";
     }
-    
+
     this.name = "SyntaxError";
     this.expected = expected;
     this.found = found;
@@ -1509,8 +1531,8 @@ window.parseRobot = (function(){
     this.line = line;
     this.column = column;
   };
-  
+
   result.SyntaxError.prototype = Error.prototype;
-  
+
   return result;
 })().parse;
