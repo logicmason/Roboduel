@@ -3,7 +3,7 @@ var assert = require('chai').assert;
 var mocha = require('mocha');
 var fs = require('fs'); // for loading files
 
-var data = fs.readFileSync('../robo.peg', 'utf-8');
+var data = fs.readFileSync('../peg/robo.peg', 'utf-8');
 // Show the PEG grammar file
 // console.log(data);
 // Create my parser

@@ -33,7 +33,7 @@ class window.Robot extends Backbone.Model
       @set('script',  commands)
     @set('source', @script)
     @set('lineNum', 0)
-
+    @env = {move: "move", idle: "idle", right: "right", left: "left", fire: "fire", geoLocate: "geoLocate"}
 
   maxX: -> @attributes.arena.width - @attributes.width
   minX: -> 0
@@ -60,7 +60,7 @@ class window.Robot extends Backbone.Model
     @collisionCheck()
 
     command = @attributes.script[@attributes.lineNum]
-    evaledCommand = roboEval(command, window.game.env);
+    evaledCommand = roboEval(command, @env);
     @[evaledCommand]() if @[evaledCommand]
     console.log("from Step()", @attributes) if @noisy
     @attributes.lineNum = (@attributes.lineNum + 1) % @attributes.script.length
@@ -127,6 +127,10 @@ class window.Robot extends Backbone.Model
   idle: ->
     @
 
+  geoLocate: ->
+    @env.x = @get('x') + @get('width') / 2
+    @env.y = @get('y') + @get('height') / 2
+    @env.dir = @get('dir')
 
 class window.RobotView extends Backbone.View
   className: 'robot'

@@ -69,7 +69,7 @@ space =
   " " / "\n" / "\t"
 
 command =
-  "move" / "left" / "right" / "fire" / "idle"
+  "move" / "left" / "right" / "fire" / "idle" / "geoLocate"
 
 mathExp =
   additive

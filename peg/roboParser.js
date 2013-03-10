@@ -995,6 +995,17 @@ window.parseRobot = (function(){
                     matchFailed("\"idle\"");
                   }
                 }
+                if (result0 === null) {
+                  if (input.substr(pos, 9) === "geoLocate") {
+                    result0 = "geoLocate";
+                    pos += 9;
+                  } else {
+                    result0 = null;
+                    if (reportFailures === 0) {
+                      matchFailed("\"geoLocate\"");
+                    }
+                  }
+                }
               }
             }
           }
