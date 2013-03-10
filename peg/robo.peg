@@ -1,0 +1,98 @@
+start =
+  grammatical*
+
+expression =
+  grammatical
+  /mathExp
+  /atom
+  /"(" space* first:expression rest:spacedExpr* space* ")"
+  { return [first].concat(rest) ;}
+
+grammatical =
+  check
+  /until
+  /both
+  /either
+  /set
+  /spacedCommand
+  /comparison
+
+check =
+  "check" space* c:spacedExpr "yes:"space* y:grammatical "no:"space* n:grammatical space*
+  { return ["check", c, y, n]; }
+
+until =
+  "until" spacedExpr spacedExpr
+
+both =
+  "both:" a:spacedExpr "and:" b:spacedExpr
+  { return ["both", a, b]; }
+
+either =
+  "either:" a:spacedExpr "or:" b:spacedExpr
+  { return ["either", a, b]; }
+
+set =
+  "set" space+ a:atom ":" e:spacedExpr
+  { return ["set", a, e]; }
+
+comparison =
+  mx:mathExp space* "=" space* eq:mathExp
+  { return ["=", mx, eq]; }
+  /mx:mathExp space* "<" space* lt:mathExp
+  { return ["<", mx, lt]; }
+  /mx:mathExp space* ">" space* gt:mathExp
+  { return [">", mx, gt]; }
+  /mathExp
+
+spacedExpr =
+  space* e:expression space*
+  { return e; }
+
+bool =
+  "true"
+  /"false"
+
+validchar
+    = [0-9a-zA-Z_?!\@#$%^&.]
+
+atom =
+    chars:validchar+
+        { return chars.join(""); }
+
+spacedCommand =
+  space* c:command space*
+  { return c; }
+
+space =
+  " " / "\n" / "\t"
+
+command =
+  "move" / "left" / "right" / "fire" / "idle"
+
+mathExp =
+  additive
+
+additive =
+  left:multiplicative space* "+" space* right:additive
+  { return ["+", left, right]; }
+  /left:multiplicative space* "-" space* right:additive
+  { return ["-", left, right]; }
+  / multiplicative
+
+multiplicative =
+  left:primary space* "*" space* right:multiplicative
+  { return ["*", left, right]; }
+  /left:primary space* "/" space* right:multiplicative
+  { return ["/", left, right]; }
+  / primary
+
+primary
+  = integer
+  / "(" space* p:mathExp space* ")"
+  { return p; }
+  /atom
+
+integer =
+  digits:[0-9]+
+  { return parseInt(digits.join(""), 10); }
