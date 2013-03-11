@@ -1,6 +1,14 @@
 window.roboEval = (expr, env={})->
   return Math.floor(expr) if (typeof expr == 'number')
-  return env[expr] if (typeof expr == 'string')
+  if (typeof expr == 'string')
+    switch (expr)
+      when 'targetSeen'
+        if env.self.targetSeen()
+          return '#t'
+        else
+          return '#f'
+      else return env[expr]
+
   if Object.prototype.toString.call(expr[0]) == '[object Array]'
     if expr.length == 1
       return roboEval(expr[0], env)

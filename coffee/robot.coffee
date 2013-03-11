@@ -35,8 +35,9 @@ class window.Robot extends Backbone.Model
     @set('lineNum', 0)
     @env = {
       move: "move", idle: "idle", fire: "fire",
-      right: "right", left: "left",
-      locateSelf: "locateSelf", locateEnemy: "locateEnemy"
+      right: "right", left: "left", self: @,
+      locateSelf: "locateSelf", locateEnemy: "locateEnemy",
+      targetSeen: "targetSeen"
     }
 
   maxX: -> @attributes.arena.width - @attributes.width
@@ -148,7 +149,7 @@ class window.Robot extends Backbone.Model
     @env.ey = @enemy().get('y') + @enemy().get('height') / 2
     @env.edir = (360 - @enemy().get('dir') * 360 / Math.TAO) % 360 #kid-friendly
 
-  targetSeen: ->
+  targetSeen: =>
     #calculates distance a shot fired would miss an enemy's center by
     #returns yes if the error is smaller than the width of the target
     cos = Math.cos
@@ -159,12 +160,16 @@ class window.Robot extends Backbone.Model
     theta = @angleToEnemy()
     thetap = @get('dir')
     epsilon = sqrt(  pow( dist* (cos(thetap) - cos(theta)  ),2) + pow(  dist* (sin(thetap) - sin(theta)  ),2))
-    (epsilon < @enemy().get('width'))
+    (epsilon < @enemy().get('width') / 2)
 
   angleToEnemy: ->
-    dy = (@enemy().get('y') - @get('y')) * -1 #flipped y-axis
+    #TODO: replace the hack for handling flipped y-axis
+    dy = @enemy().get('y') - @get('y')
     dx = @enemy().get('x') - @get('x')
-    Math.atan(dy/dx)
+    if (dx > 0)
+      Math.atan(dy/dx)
+    else
+      (Math.atan(dy/dx) + Math.PI) % Math.TAO
 
   distanceToEnemy: ->
     dy = @enemy().get('y') - @get('y')
