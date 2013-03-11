@@ -1,5 +1,5 @@
 window.roboEval = (expr, env={})->
-  return expr if (typeof expr == 'number')
+  return Math.floor(expr) if (typeof expr == 'number')
   return env[expr] if (typeof expr == 'string')
   if Object.prototype.toString.call(expr[0]) == '[object Array]'
     if expr.length == 1

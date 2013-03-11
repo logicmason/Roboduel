@@ -31,9 +31,13 @@ class window.Robot extends Backbone.Model
         commands.push "idle" if num == 4
       )
       @set('script',  commands)
-    @set('source', @script)
+    @set('source', @attributes.script.join('\n'))
     @set('lineNum', 0)
-    @env = {move: "move", idle: "idle", right: "right", left: "left", fire: "fire", geoLocate: "geoLocate"}
+    @env = {
+      move: "move", idle: "idle", fire: "fire",
+      right: "right", left: "left",
+      locateSelf: "locateSelf", locateEnemy: "locateEnemy"
+    }
 
   maxX: -> @attributes.arena.width - @attributes.width
   minX: -> 0
@@ -44,6 +48,12 @@ class window.Robot extends Backbone.Model
   centerY: -> @attributes.y + @attributes.height/2
 
   noisy: false
+
+  enemy: ->
+    unless @collection and @collection.length
+      throw "cannot find enemies unless robot is in a collection!"
+    myloc = @collection.indexOf(@)
+    @collection.at((myloc+1) % @collection.length)
 
   die: ->
     console.log "#{@attributes.name} has died" if @noisy
@@ -127,10 +137,16 @@ class window.Robot extends Backbone.Model
   idle: ->
     @
 
-  geoLocate: ->
+  locateSelf: ->
     @env.x = @get('x') + @get('width') / 2
     @env.y = @get('y') + @get('height') / 2
-    @env.dir = @get('dir')
+    @env.dir = (360 - @get('dir') * 360 / Math.TAO) % 360  #kid-friendly
+
+  locateEnemy: ->
+    return unless @enemy()
+    @env.ex = @enemy().get('x') + @enemy().get('width') / 2
+    @env.ey = @enemy().get('y') + @enemy().get('height') / 2
+    @env.edir = (360 - @enemy().get('dir') * 360 / Math.TAO) % 360 #kid-friendly
 
 class window.RobotView extends Backbone.View
   className: 'robot'
@@ -169,9 +185,17 @@ class window.RobotCommandView extends Backbone.View
       @renderInput()
     else if @display == "input"
       @model.set('source', @$('textarea').val())
-      parsedCommands = parseRobot(@model.get('source'))
-      @model.set('script', parsedCommands)
-      @render()
+      try
+        parsedCommands = parseRobot(@model.get('source'))
+        console.log parsedCommands
+      catch error
+        console.log("Parse error: ", error)
+        parsedCommands = ['idle']
+        alert("robot's program doesn't parse!")
+      finally
+        @model.set('lineNum', 0)
+        @model.set('script', parsedCommands)
+        @render()
     console.log "#{@display} display"
 
   render: ->

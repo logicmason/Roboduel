@@ -996,13 +996,24 @@ window.parseRobot = (function(){
                   }
                 }
                 if (result0 === null) {
-                  if (input.substr(pos, 9) === "geoLocate") {
-                    result0 = "geoLocate";
-                    pos += 9;
+                  if (input.substr(pos, 10) === "locateSelf") {
+                    result0 = "locateSelf";
+                    pos += 10;
                   } else {
                     result0 = null;
                     if (reportFailures === 0) {
-                      matchFailed("\"geoLocate\"");
+                      matchFailed("\"locateSelf\"");
+                    }
+                  }
+                  if (result0 === null) {
+                    if (input.substr(pos, 11) === "locateEnemy") {
+                      result0 = "locateEnemy";
+                      pos += 11;
+                    } else {
+                      result0 = null;
+                      if (reportFailures === 0) {
+                        matchFailed("\"locateEnemy\"");
+                      }
                     }
                   }
                 }
