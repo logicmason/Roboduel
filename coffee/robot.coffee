@@ -164,16 +164,16 @@ class window.Robot extends Backbone.Model
 
   angleToEnemy: ->
     #TODO: replace the hack for handling flipped y-axis
-    dy = @enemy().get('y') - @get('y')
-    dx = @enemy().get('x') - @get('x')
+    dy = @env.ey - @enemy().get('height')/2 - @get('y')
+    dx = @env.ex - @enemy().get('width')/2 - @get('x')
     if (dx > 0)
       Math.atan(dy/dx)
     else
       (Math.atan(dy/dx) + Math.PI) % Math.TAO
 
   distanceToEnemy: ->
-    dy = @enemy().get('y') - @get('y')
-    dx = @enemy().get('x') - @get('x')
+    dy = @env.ey - @get('y')
+    dx = @env.ex - @get('x')
     Math.sqrt(dx*dx + dy*dy)
 
 class window.RobotView extends Backbone.View
