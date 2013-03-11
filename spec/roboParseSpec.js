@@ -38,3 +38,43 @@ suite('Basic commands', function() {
     );
   });
 });
+
+suite('Mathematical Expressions', function() {
+  test('addition', function(){
+    assert.deepEqual(
+      parse("3 + 7"), [['+', 3, 7]]
+    );
+  });
+  test('addition', function(){
+    assert.deepEqual(
+      parse("3 + 7"), [['+', 3, 7]]
+    );
+  });
+  test('subtraction', function(){
+    assert.deepEqual(
+      parse("13 - 7"), [['-', 13, 7]]
+    );
+  });
+  test('mutliplication', function(){
+    assert.deepEqual(
+      parse("7 * 8"), [['*', 7, 8]]
+    );
+  });
+  test('division', function(){
+    assert.deepEqual(
+      parse("2000 / 8"), [['/', 2000, 8]]
+    );
+  });
+  test('order of operations', function(){
+    assert.deepEqual(
+      parse("27 / 3 + 7 * 8"), [['+', ['/', 27, 3], ['*', 7, 8]]]
+    );
+  });
+  test('nested operation', function(){
+    assert.deepEqual(
+      parse("103 * 5 - 2 + 10 / 5"), [['-', ['*', 103, 5], ['+', 2, ['/', 10, 5]]]]
+    );
+  });
+});
+
+

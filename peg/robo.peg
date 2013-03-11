@@ -1,5 +1,5 @@
 start =
-  grammatical*
+  expression*
 
 expression =
   grammatical
@@ -38,13 +38,22 @@ set =
   { return ["set", a, e]; }
 
 comparison =
+  l:comparisonExp space* "and" space* r:comparison
+  { return ["and", l, r]; }
+  /l:comparisonExp space* "or" space* r:comparison
+  { return ["or", l, r]; }
+  /comparisonExp
+
+comparisonExp =
   mx:mathExp space* "=" space* eq:mathExp
   { return ["=", mx, eq]; }
   /mx:mathExp space* "<" space* lt:mathExp
-  { return ["<", mx, lt]; }
+  { return  ["<", mx, lt]; }
   /mx:mathExp space* ">" space* gt:mathExp
   { return [">", mx, gt]; }
   /mathExp
+  / "(" space* c:comparison space* ")"
+  { return c; }
 
 spacedExpr =
   space* e:expression space*

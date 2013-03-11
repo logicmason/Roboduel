@@ -15,19 +15,29 @@ window.roboEval = (expr, env={})->
       0
     when '='
       if (roboEval(expr[1], env) == roboEval(expr[2], env))
-        return '#t'
+        '#t'
       else
-        return '#f'
+        '#f'
     when '<'
       if (roboEval(expr[1], env) < roboEval(expr[2], env))
-        return '#t'
+        '#t'
       else
-        return '#f'
+        '#f'
     when '>'
       if (roboEval(expr[1], env) > roboEval(expr[2], env))
-        return '#t'
+        '#t'
       else
-        return '#f'
+        '#f'
+    when 'and'
+      if roboEval(expr[1], env) == '#t' and roboEval(expr[2], env) == '#t'
+        '#t'
+      else
+        '#f'
+    when 'or'
+      if roboEval(expr[1], env) == '#t' or roboEval(expr[2], env) == '#t'
+        '#t'
+      else
+        '#f'
     when '*' then roboEval(expr[1], env) * roboEval(expr[2], env)
     when '/' then roboEval(expr[1], env) / roboEval(expr[2], env)
     when '+' then roboEval(expr[1], env) + roboEval(expr[2], env)
