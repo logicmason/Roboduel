@@ -115,12 +115,12 @@ class window.Robot extends Backbone.Model
   right: ->
     @set('dir', (@attributes.dir+0.03) % Math.TAO)
     @set('dx', Math.cos @get('dir'))
-    @set('dy', Math.sin @get('dir'))
+    @set('dy', Math.sin @get('dir') * -1)
 
   left: ->
     @set('dir', (Math.TAO + @attributes.dir-0.03) % Math.TAO)
     @set('dx', Math.cos @get('dir'))
-    @set('dy', Math.sin @get('dir'))
+    @set('dy', Math.sin @get('dir') * -1)
 
   fire: ->
     mult = 20
@@ -147,6 +147,29 @@ class window.Robot extends Backbone.Model
     @env.ex = @enemy().get('x') + @enemy().get('width') / 2
     @env.ey = @enemy().get('y') + @enemy().get('height') / 2
     @env.edir = (360 - @enemy().get('dir') * 360 / Math.TAO) % 360 #kid-friendly
+
+  targetSeen: ->
+    #calculates distance a shot fired would miss an enemy's center by
+    #returns yes if the error is smaller than the width of the target
+    cos = Math.cos
+    sin = Math.sin
+    pow = Math.pow
+    sqrt = Math.sqrt
+    dist = @distanceToEnemy()
+    theta = @angleToEnemy()
+    thetap = @get('dir')
+    epsilon = sqrt(  pow( dist* (cos(thetap) - cos(theta)  ),2) + pow(  dist* (sin(thetap) - sin(theta)  ),2))
+    (epsilon < @enemy().get('width'))
+
+  angleToEnemy: ->
+    dy = (@enemy().get('y') - @get('y')) * -1 #flipped y-axis
+    dx = @enemy().get('x') - @get('x')
+    Math.atan(dy/dx)
+
+  distanceToEnemy: ->
+    dy = @enemy().get('y') - @get('y')
+    dx = @enemy().get('x') - @get('x')
+    Math.sqrt(dx*dx + dy*dy)
 
 class window.RobotView extends Backbone.View
   className: 'robot'
