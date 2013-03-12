@@ -56,7 +56,7 @@ class window.Robot extends Backbone.Model
 
   enemy: ->
     unless @collection and @collection.length
-      throw "cannot find enemies unless robot is in a collection!"
+      console.log "cannot find enemies unless robot is in a collection!"
     myloc = @collection.indexOf(@)
     @collection.at((myloc+1) % @collection.length)
 
@@ -180,31 +180,45 @@ class window.Robot extends Backbone.Model
 
   upload: ->
     Parse.initialize("ws2K2mzPe0YayCqXOT50STBeZqFe3PJIvkwbmsyG", "Q32iv4tLwEOS5gEiWXwOBRQX2xtA75Fu5SRuIFV9");
+
     RoboRecord = Parse.Object.extend('RoboScript')
     @roboRecord = new RoboRecord() unless @roboRecord
     @roboRecord.set('name', @get('name'))
     @roboRecord.set('source', @get('source'))
 
-    @roboRecord.save(null, {
-      success: (@roboRecord)->
-        console.log "lol, dude I'm on Polk Street!"
-      error: (@roboRecord, error)->
-        console.log "ran into an #{error}"
-    })
+    query = new Parse.Query('RoboScript')
+    query.equalTo('name', @get('name'))
+    that = @
+    promise = query.first(
+      success: (result)=>
+        console.log result
+        if (result)
+          alert "Oh noes!  An evil robot maker has already used up that name!"
+        else
+          @roboRecord.save(null, {
+            success: (@roboRecord)->
+              console.log "lol, dude I'm on Polk Street!"
+            error: (@roboRecord, error)->
+              console.log "ran into an #{error}"
+          })
+      error: (error)=>
+        alert("Error fetching bot from Parse: #{error.message}")
+    )
 
-  load: (name)->
+  download: (name)->
     Parse.initialize("ws2K2mzPe0YayCqXOT50STBeZqFe3PJIvkwbmsyG", "Q32iv4tLwEOS5gEiWXwOBRQX2xtA75Fu5SRuIFV9");
     query = new Parse.Query('RoboScript')
     query.equalTo('name', name)
     that = @
-    query.first
+    promise = query.first(
       success: (result)=>
-        that.roboRecord = result
+        throw "wat?" unless (that.roboRecord = result)
+        that.set('name', result.get('name'))
         that.set('source', result.get('source'))
         that.parseSource()
       error: (error)=>
         alert("Error fetching bot from Parse: #{error.message}")
-    undefined
+    )
 
   parseSource: ->
     @attributes.lineNum = 1
@@ -277,6 +291,7 @@ class window.RobotCommandView extends Backbone.View
     area = ('<textarea>')
     area += @model.get('source')
     @$el.append(area+'</textarea>')
+    @$('textarea').select()
     @display = 'input'
     @
 

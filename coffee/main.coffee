@@ -16,6 +16,12 @@ class window.Game extends Backbone.Model
     $('.arena').append(rView.render().el)
     window.robotorium.add(r)
 
+  invite: (name)->
+    @addRobot()
+    bot = robotorium.models[robotorium.models.length-1]
+    bot.download(name)
+
+
 $(document).ready ->
   window.game = new Game()
   window.robotorium.models[0].die() #TODO prevent creation of default bot
