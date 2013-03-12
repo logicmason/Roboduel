@@ -279,11 +279,14 @@ class window.RobotCommandView extends Backbone.View
 
   render: ->
     @$el.html('<div class="editButton">Edit</div>')
-    @$el.append('<h3 class="heading">'+"#{@model.get('name')}'s program</h3>")
-    @$el.append("<ol>")
-    for x in @model.get('script')
-      @$el.append("<li>#{x}</li>")
-    @$el.append("</ol>")
+    @$el.append('<h3 class="heading">'+"#{@model.get('name')}</h3>")
+    # @$el.append("<ol>")
+    # for x in @model.get('script')
+    #   @$el.append("<li>#{x}</li>")
+    # @$el.append("</ol>")
+    pre = ('<pre>')
+    pre += @model.get('source')
+    @$el.append(pre + "</pre>")
     @display = 'standard'
     @
 

@@ -80,6 +80,7 @@ a:link, a:visited, a:active{
 }
 
 .commands .heading {
+  font-family: Tahoma;
   margin: 0;
 }
 
@@ -99,7 +100,16 @@ textarea {
   font-size: 17px;
   min-height: 200px;
   width: 240px;
-  margin: 20px auto;
+  margin: 20px;
+}
+
+pre {
+  font-family: 'Iceland';
+  font-size: 22px;
+  line-height: 1.6em;
+  width: 260px;
+  padding: 5px;
+  margin-bottom: 10px;
 }
 
 li{
