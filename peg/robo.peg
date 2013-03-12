@@ -9,6 +9,7 @@ expression =
 grammatical =
   check
   /until
+  /do
   /both
   /either
   /set
@@ -24,6 +25,11 @@ check =
 
 until =
   "until" spacedExpr spacedExpr
+
+do =
+  "do" space* "(" first:spacedExpr rest:spacedExpr* ")"
+  { return ["do", [first].concat(rest)]; }
+
 
 both =
   "both:" a:spacedExpr "and:" b:spacedExpr

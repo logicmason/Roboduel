@@ -36,6 +36,7 @@ class window.Robot extends Backbone.Model
     @set('source', @attributes.script.join('\n'))
     @set('lineNum', 0)
     @env = {
+      queue: [],
       move: "move", idle: "idle", fire: "fire",
       right: "right", left: "left", self: @,
       locateSelf: "locateSelf", locateEnemy: "locateEnemy",
@@ -73,12 +74,13 @@ class window.Robot extends Backbone.Model
 
   step: =>
     @collisionCheck()
-
-    command = @attributes.script[@attributes.lineNum]
+    if @env.queue.length > 0
+      command = @env.queue.shift()
+    else
+      command = @attributes.script[@attributes.lineNum]
+      @attributes.lineNum = (@attributes.lineNum + 1) % @attributes.script.length
     evaledCommand = roboEval(command, @env);
     @[evaledCommand]() if @[evaledCommand]
-    console.log("from Step()", @attributes) if @noisy
-    @attributes.lineNum = (@attributes.lineNum + 1) % @attributes.script.length
 
   collisionCheck: =>
     window.silo.each((missile)=>
@@ -178,21 +180,22 @@ class window.Robot extends Backbone.Model
     dx = @env.ex - @get('x')
     Math.sqrt(dx*dx + dy*dy)
 
-  upload: ->
+  upload: (name)->
     Parse.initialize("ws2K2mzPe0YayCqXOT50STBeZqFe3PJIvkwbmsyG", "Q32iv4tLwEOS5gEiWXwOBRQX2xtA75Fu5SRuIFV9");
 
     RoboRecord = Parse.Object.extend('RoboScript')
     @roboRecord = new RoboRecord() unless @roboRecord
-    @roboRecord.set('name', @get('name'))
+    @roboRecord.set('name', name || @get('name'))
     @roboRecord.set('source', @get('source'))
 
     query = new Parse.Query('RoboScript')
-    query.equalTo('name', @get('name'))
+    query.equalTo('name', name || @get('name'))
     that = @
     promise = query.first(
       success: (result)=>
         console.log result
-        if (result)
+        if (result and result.id != that.roboRecord.id)
+          debugger
           alert "Oh noes!  An evil robot maker has already used up that name!"
         else
           @roboRecord.save(null, {
@@ -213,6 +216,7 @@ class window.Robot extends Backbone.Model
     promise = query.first(
       success: (result)=>
         if result
+          that.roboRecord = result
           that.set('name', result.get('name'))
           that.set('source', result.get('source'))
           that.parseSource()

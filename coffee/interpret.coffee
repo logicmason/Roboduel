@@ -7,7 +7,8 @@ window.roboEval = (expr, env={})->
           return '#t'
         else
           return '#f'
-      else return env[expr]
+      else
+        return env[expr]
 
   if Object.prototype.toString.call(expr[0]) == '[object Array]'
     if expr.length == 1
@@ -50,6 +51,10 @@ window.roboEval = (expr, env={})->
     when '/' then roboEval(expr[1], env) / roboEval(expr[2], env)
     when '+' then roboEval(expr[1], env) + roboEval(expr[2], env)
     when '-' then roboEval(expr[1], env) - roboEval(expr[2], env)
+    when 'do'
+      env['queue'] = _.clone(expr[1])
+      cmd = env['queue'].shift()
+      roboEval(cmd, env)
     when 'check'
       if roboEval(expr[1], env) == '#t'
         roboEval(expr[2], env)
