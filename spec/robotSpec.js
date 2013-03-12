@@ -39,13 +39,11 @@ describe("Robot", function() {
 
     it("should caculate movement dx from robot direction", function(){
       var dir = bot1.get('dir');
-      console.log(bot1.attributes);
       expect(bot1.get('dx')).toBeCloseTo(Math.cos(dir));
     });
 
     it("should caculate movement dy from robot direction and flip axis", function(){
       var dir = bot1.get('dir');
-      console.log(bot1.attributes);
       expect(bot1.get('dy')).toBeCloseTo(Math.sin(dir) * -1);
     });
 
@@ -61,6 +59,32 @@ describe("Robot", function() {
       bot1.updateDxDy();
       expect(bot1.get('dx')).toBeCloseTo(0);
       expect(bot1.get('dy')*-1).toBeCloseTo(1);
+    });
+  });
+
+  it("Parse should work", function(){
+    Parse.initialize("ws2K2mzPe0YayCqXOT50STBeZqFe3PJIvkwbmsyG", "Q32iv4tLwEOS5gEiWXwOBRQX2xtA75Fu5SRuIFV9");
+    var TestObject = Parse.Object.extend("TestObject");
+    var testObject = new TestObject();
+    var flag;
+
+    runs(function() {
+      testObject.save({foo: "bar"}, {
+        success: function(object) {
+          flag = true;
+        },
+        error: function(object) {
+          flag = false;
+        }
+      });
+    });
+
+    waitsFor(function() {
+      return flag;
+    }, "Waits for message", 1500);
+
+    runs(function() {
+      expect(flag).toBeTruthy();
     });
   });
 });

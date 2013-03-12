@@ -178,6 +178,39 @@ class window.Robot extends Backbone.Model
     dx = @env.ex - @get('x')
     Math.sqrt(dx*dx + dy*dy)
 
+  upload: ->
+    Parse.initialize("ws2K2mzPe0YayCqXOT50STBeZqFe3PJIvkwbmsyG", "Q32iv4tLwEOS5gEiWXwOBRQX2xtA75Fu5SRuIFV9");
+    RoboRecord = Parse.Object.extend('RoboScript')
+    @roboRecord = new RoboRecord() unless @roboRecord
+    @roboRecord.set('name', @get('name'))
+    @roboRecord.set('source', @get('source'))
+
+    @roboRecord.save(null, {
+      success: (@roboRecord)->
+        console.log "lol, dude I'm on Polk Street!"
+      error: (@roboRecord, error)->
+        console.log "ran into an #{error}"
+    })
+
+  load: (name)->
+    Parse.initialize("ws2K2mzPe0YayCqXOT50STBeZqFe3PJIvkwbmsyG", "Q32iv4tLwEOS5gEiWXwOBRQX2xtA75Fu5SRuIFV9");
+    query = new Parse.Query('RoboScript')
+    query.equalTo('name', name)
+    that = @
+    query.first
+      success: (result)=>
+        that.roboRecord = result
+        that.set('source', result.get('source'))
+        that.parseSource()
+      error: (error)=>
+        alert("Error fetching bot from Parse: #{error.message}")
+    undefined
+
+  parseSource: ->
+    @attributes.lineNum = 1
+    @set('script', parseRobot(@get('source')))
+
+
 class window.RobotView extends Backbone.View
   className: 'robot'
 
@@ -206,6 +239,7 @@ class window.RobotCommandView extends Backbone.View
 
   initialize: ->
     @listenTo(@model, 'change:script', @render)
+    # @listenTo(@model, 'change:source', @toggleView)
     @listenTo(@model, 'destroy', @remove)
     $('.rightbar').append(@$el)
     @render()
@@ -217,7 +251,6 @@ class window.RobotCommandView extends Backbone.View
       @model.set('source', @$('textarea').val())
       try
         parsedCommands = parseRobot(@model.get('source'))
-        console.log parsedCommands
       catch error
         console.log("Parse error: ", error)
         parsedCommands = ['idle']
