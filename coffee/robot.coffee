@@ -20,6 +20,8 @@ class window.Robot extends Backbone.Model
     @set('hp', defaults["hp"]) unless @attributes.hp
     @set('x', Math.random()* @maxX()) unless @attributes.x
     @set('y', Math.random()* @maxY()) unless @attributes.y
+    @updateDxDy()
+
     unless @attributes.script
       commands = []
       _(6).times(->
@@ -47,8 +49,10 @@ class window.Robot extends Backbone.Model
   deg: -> @attributes.dir * 360 / Math.TAO
   centerX: -> @attributes.x + @attributes.width/2
   centerY: -> @attributes.y + @attributes.height/2
-
   noisy: false
+  updateDxDy: ->
+    @set('dx', Math.cos @get('dir'))
+    @set('dy', Math.sin @get('dir') * -1)
 
   enemy: ->
     unless @collection and @collection.length
@@ -102,7 +106,7 @@ class window.Robot extends Backbone.Model
   #Commands -- these are read from the script[] and executed in step()
   move: =>
     dx = Math.cos @get('dir')
-    dy = Math.sin @get('dir')
+    dy = Math.sin @get('dir') #y is reversed elsewhere to fix flipped axis
     newx = @attributes.x + dx
     newx = @maxX() if newx > @maxX()
     newx = @minX() if newx < @minX()
@@ -115,13 +119,11 @@ class window.Robot extends Backbone.Model
 
   right: ->
     @set('dir', (@attributes.dir+0.03) % Math.TAO)
-    @set('dx', Math.cos @get('dir'))
-    @set('dy', Math.sin @get('dir') * -1)
+    @updateDxDy()
 
   left: ->
     @set('dir', (Math.TAO + @attributes.dir-0.03) % Math.TAO)
-    @set('dx', Math.cos @get('dir'))
-    @set('dy', Math.sin @get('dir') * -1)
+    @updateDxDy()
 
   fire: ->
     mult = 20
