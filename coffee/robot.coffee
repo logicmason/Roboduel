@@ -212,10 +212,12 @@ class window.Robot extends Backbone.Model
     that = @
     promise = query.first(
       success: (result)=>
-        throw "wat?" unless (that.roboRecord = result)
-        that.set('name', result.get('name'))
-        that.set('source', result.get('source'))
-        that.parseSource()
+        if result
+          that.set('name', result.get('name'))
+          that.set('source', result.get('source'))
+          that.parseSource()
+        else
+          alert "No Robot named #{name}"
       error: (error)=>
         alert("Error fetching bot from Parse: #{error.message}")
     )
