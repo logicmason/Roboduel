@@ -38,9 +38,11 @@ RoboDuel is written in [CoffeeScript], using the Sublime (with VIM support via V
 Installation
 --------------
 
-1. Clone the repo
-2. `cd RoboDuel`
-3. `open index.html`
+1. Clone the repo: `git clone https://github.com/logicmason/Roboduel.git`
+2. Change to the RoboDuel directory: `cd RoboDuel`
+3. compile the coffescript:
+`coffee --compile -o js/ coffee/`
+4. open the file: `open index.html`
 
 Testing
 -------

@@ -5,6 +5,7 @@ class window.Game extends Backbone.Model
   initialize: ->
     window.silo = new MissileCollection({})
     window.robotorium = new RobotCollection({})
+    @listenTo(window.robotorium, "finalSurvivor", @finalSurvivor)
 
   addRobot: (options)->
     r = new Robot(options)
@@ -24,8 +25,15 @@ class window.Game extends Backbone.Model
     _(window.robotorium.models).each((bot)-> bot.startOnce())
     console.log('start')
 
-  loadRobot: =>
-    name = prompt "Who would you like to load?"
+  finalSurvivor: ->
+    @winner = robotorium.models[0]
+    alert "#{@winner.get('name')} is victorious!"
+    @winner.die()
+    @playerbot = null
+    @enemybot = null
+
+  loadRobot: (event, name)=>
+    name || name = prompt "Who would you like to load?", name
     unless @playerbot
       botSource = @checkDBforBot(name, (result)=>
         @addRobot({
@@ -38,8 +46,8 @@ class window.Game extends Backbone.Model
       )
     else @playerbot.download(name)
 
-  loadEnemy: =>
-    name = prompt "Who would you like to load?"
+  loadEnemy: (event, name)=>
+    name = name || prompt "Who would you like to load?"
     unless @enemybot
       botSource = @checkDBforBot(name, (result)=>
         @addRobot({

@@ -67,7 +67,6 @@ class window.Robot extends Backbone.Model
     console.log "#{@attributes.name} has died" if @noisy
     clearInterval(@intervalID)
     @destroy()
-    window.robotorium.remove(@)
 
   start: =>
     @intervalID = setInterval =>
