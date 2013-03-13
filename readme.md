@@ -6,7 +6,7 @@ Code the strongest bot to win
 
   - HTML5/JS Dom-node game
   - Control your robot by writing its program before the duel starts
-  - The robot continually loops through its command list
+  - The robot runs programs written in a RoboCode
   - Destroy the enemy robot before it destroys you
 
     
@@ -17,13 +17,13 @@ fun with a sprinkle of educational value!"
 
 ### Development status
   - Started as 2 day personal project, many more updates to come in the next couple of days
-  - Robots can be created
+  - Robots can be either created or downloaded and placed into the arena
   - Parser and interpretter for the robots' programming language written
   - Programs are user editable and robots immediately respond
   - Robots can fire missiles
   - Branching, looping and variable declarations are supported in robocode
-  - No network / multiplayer features yet
-  - Game design still not set in stone
+  - Robots can be saved and loaded to the server, but only through the console
+  - Game design still evolving
 
 
 ### Development tools and environment of choice

@@ -17,8 +17,8 @@ class window.Missile extends Backbone.Model
   maxY: -> @attributes.arena.height - @attributes.height
   minY: -> 0
   deg: -> @attributes.dir * 360 / Math.TAO
-  dx: -> (Math.cos @get('dir')) * 10
-  dy: -> (Math.sin @get('dir')) * 10
+  dx: -> (Math.cos @get('dir')) * 15
+  dy: -> (Math.sin @get('dir')) * 15
 
   initialize: ->
     @set('x', @attributes.x - @attributes.width/2)

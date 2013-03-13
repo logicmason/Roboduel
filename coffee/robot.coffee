@@ -1,9 +1,9 @@
 class window.Robot extends Backbone.Model
   defaults:
     dir: 0
-    hp: 100
-    maxHP: 1
-    attack: 5
+    hp: 250
+    maxHP: 250
+    attack: 3
     name: "robot"
     x: 0
     y: 0
@@ -33,7 +33,7 @@ class window.Robot extends Backbone.Model
         commands.push "idle" if num == 4
       )
       @set('script',  commands)
-    @set('source', @attributes.script.join('\n'))
+      @set('source', @attributes.script.join('\n'))
     @set('lineNum', 0)
     @env = {
       queue: [],
@@ -42,6 +42,7 @@ class window.Robot extends Backbone.Model
       locateSelf: "locateSelf", locateEnemy: "locateEnemy",
       targetSeen: "targetSeen"
     }
+    @startOnce = _.once @start
 
   maxX: -> @attributes.arena.width - @attributes.width
   minX: -> 0
@@ -58,6 +59,7 @@ class window.Robot extends Backbone.Model
   enemy: ->
     unless @collection and @collection.length
       console.log "cannot find enemies unless robot is in a collection!"
+      return @
     myloc = @collection.indexOf(@)
     @collection.at((myloc+1) % @collection.length)
 
@@ -67,7 +69,7 @@ class window.Robot extends Backbone.Model
     @destroy()
     window.robotorium.remove(@)
 
-  start: ->
+  start: =>
     @intervalID = setInterval =>
       @step()
     ,@frequency
@@ -84,13 +86,13 @@ class window.Robot extends Backbone.Model
 
   collisionCheck: =>
     window.silo.each((missile)=>
-      mLeft = missile.get('x') + missile.dx()*2
-      mRight = missile.get('x') + missile.get('width') + missile.dx()*2
+      mLeft = missile.get('x') + missile.dx()
+      mRight = missile.get('x') + missile.get('width') + missile.dx()
       rLeft = @get('x')
       rRight = @get('x') + @get('width')
 
       mTop = missile.get('y') + missile.dy()*2
-      mBottom = missile.get('y') + missile.get('height') + missile.dy()*2
+      mBottom = missile.get('y') + missile.get('height') + missile.dy()
       rTop = @get('y')
       rBottom = @get('y') + @get('height')
 
@@ -134,7 +136,7 @@ class window.Robot extends Backbone.Model
       x: @get('x')+@get('width')/2 + Math.cos(@get('dir')) * mult
       y: @get('y')+@get('height')/2 + Math.sin(@get('dir')) * mult
       dir: @get('dir')
-      damage: @attack
+      damage: @get('attack')
     })
     missileView = new MissileView({model: missile})
     window.silo.add(missile)
@@ -195,7 +197,6 @@ class window.Robot extends Backbone.Model
       success: (result)=>
         console.log result
         if (result and result.id != that.roboRecord.id)
-          debugger
           alert "Oh noes!  An evil robot maker has already used up that name!"
         else
           @roboRecord.save(null, {
@@ -226,8 +227,14 @@ class window.Robot extends Backbone.Model
         alert("Error fetching bot from Parse: #{error.message}")
     )
 
+  readRecord: =>
+    record = @get('roboRecord')
+    @set('name', record.get('name'))
+    @set('source', record.get('source'))
+    @parseSource()
+
   parseSource: ->
-    @attributes.lineNum = 1
+    @attributes.lineNum = 0
     @set('script', parseRobot(@get('source')))
 
 
@@ -259,7 +266,8 @@ class window.RobotCommandView extends Backbone.View
 
   initialize: ->
     @listenTo(@model, 'change:script', @render)
-    # @listenTo(@model, 'change:source', @toggleView)
+    @listenTo(@model, 'change:source', @toggleView)
+    @listenTo(@model, 'change:hp', @render)
     @listenTo(@model, 'destroy', @remove)
     $('.rightbar').append(@$el)
     @render()
@@ -284,10 +292,7 @@ class window.RobotCommandView extends Backbone.View
   render: ->
     @$el.html('<div class="editButton">Edit</div>')
     @$el.append('<h3 class="heading">'+"#{@model.get('name')}</h3>")
-    # @$el.append("<ol>")
-    # for x in @model.get('script')
-    #   @$el.append("<li>#{x}</li>")
-    # @$el.append("</ol>")
+    @$el.append("<div class='hp'>HP: #{@model.get('hp')}</div>")
     pre = ('<pre>')
     pre += @model.get('source')
     @$el.append(pre + "</pre>")
@@ -296,7 +301,7 @@ class window.RobotCommandView extends Backbone.View
 
   renderInput: ->
     @$el.html('<div class="editButton">Done</div>')
-    @$el.append('<h3 class="heading">'+"#{@model.get('name')}'s program</h3>")
+    @$el.append('<h3 class="heading">'+"#{@model.get('name')}</h3>")
     area = ('<textarea>')
     area += @model.get('source')
     @$el.append(area+'</textarea>')

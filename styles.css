@@ -42,6 +42,11 @@ a:link, a:visited, a:active{
   float:right;
 }
 
+span.start{
+  float: left;
+  margin-left: 20px;
+}
+
 .topbar span:hover{
   background-color: #885;
   text-shadow: 1px 1px 2px #775;
@@ -74,15 +79,19 @@ a:link, a:visited, a:active{
 
 .commands {
   background: wheat;
-  margin:0 auto;
-  padding: 10px;
-  width: 300px;
+  margin:0;
+  padding: 10px 20px;
+  width: 320px;
 }
 
-.commands .heading {
-  font-family: Tahoma;
+.commands .heading, .commands .hp {
+  font-family: 'Iceland', sans-serif;
   margin: 0;
+  padding: 5px;
+  font-size: 20px;
 }
+
+.commands .heading { font-size: 30px;}
 
 .editButton {
   float: right;
@@ -97,16 +106,16 @@ a:link, a:visited, a:active{
 
 textarea {
   line-height: 1.7em;
-  font-size: 17px;
-  min-height: 200px;
+  font-size: 15px;
+  min-height: 150px;
   width: 240px;
-  margin: 20px;
+  margin: 10px 10px 0;
 }
 
 pre {
-  font-family: 'Iceland';
-  font-size: 22px;
-  line-height: 1.6em;
+  font-family: 'Droid Sans Mono';
+  font-size: 14px;
+  line-height: 1.5em;
   width: 260px;
   padding: 5px;
   margin-bottom: 10px;

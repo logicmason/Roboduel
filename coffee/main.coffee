@@ -8,34 +8,62 @@ class window.Game extends Backbone.Model
 
   addRobot: (options)->
     r = new Robot(options)
+    r.readRecord() if r.get('roboRecord')
     rView = new RobotView({model: r})
     cmdv = new RobotCommandView({model: r})
-    r.start()
     cmdv.render()
     # TODO: make game view
     $('.arena').append(rView.render().el)
     window.robotorium.add(r)
 
-  loadRobot: =>
-    name = prompt "Who would you like to load?"
-    @invite(name)
-
   invite: (name)->
     @addRobot()
     bot = robotorium.models[robotorium.models.length-1]
-    console.log !!bot.download(name)
 
-  onServer: (name)->
+  start: ->
+    _(window.robotorium.models).each((bot)-> bot.startOnce())
+    console.log('start')
+
+  loadRobot: =>
+    name = prompt "Who would you like to load?"
+    unless @playerbot
+      botSource = @checkDBforBot(name, (result)=>
+        @addRobot({
+          roboRecord: result
+          name: result.get('name')
+          source: result.get('source')
+        })
+        @playerbot = robotorium.models[robotorium.models.length-1]
+        @playerbot.readRecord()
+      )
+    else @playerbot.download(name)
+
+  loadEnemy: =>
+    name = prompt "Who would you like to load?"
+    unless @enemybot
+      botSource = @checkDBforBot(name, (result)=>
+        @addRobot({
+          roboRecord: result
+          name: result.get('name')
+          source: result.get('source')
+          enemy: true
+        })
+        @enemybot = robotorium.models[robotorium.models.length-1]
+        @enemybot.readRecord()
+      )
+    else @enemybot.download(name)
+
+  checkDBforBot: (name, foundCB, notFoundCB)=>
     Parse.initialize("ws2K2mzPe0YayCqXOT50STBeZqFe3PJIvkwbmsyG", "Q32iv4tLwEOS5gEiWXwOBRQX2xtA75Fu5SRuIFV9");
     query = new Parse.Query('RoboScript')
-    query.equalTo('name', @get('name'))
+    query.equalTo('name', name)
     that = @
     promise = query.first(
       success: (result)=>
         if (result)
-          return true
+          foundCB(result) if foundCB
         else
-          return false
+          notFoundCB() if notFoundCB
       error: (error)=>
         alert("Error fetching bot from Parse: #{error.message}")
     )
@@ -44,5 +72,7 @@ $(document).ready ->
   window.game = new Game()
   window.robotorium.models[0].die() #TODO prevent creation of default bot
   $('.addRobot').click(game.addRobot)
-  game.addRobot({name: "somebot"})
   $('.loadRobot').click(game.loadRobot)
+  $('.start').click(game.start)
+  $('.loadEnemy').click(game.loadEnemy)
+
