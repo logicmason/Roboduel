@@ -101,6 +101,8 @@ multiplicative =
   { return ["*", left, right]; }
   /left:primary space* "/" space* right:multiplicative
   { return ["/", left, right]; }
+  /left:primary space* "%" space* right:multiplicative
+  { return ["%", left, right]; }
   / primary
 
 primary

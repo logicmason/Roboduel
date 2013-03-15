@@ -1,8 +1,8 @@
 class window.Robot extends Backbone.Model
   defaults:
     dir: 0
-    hp: 250
-    maxHP: 250
+    hp: 500
+    maxHP: 500
     attack: 3
     name: "robot"
     x: 0
@@ -146,13 +146,13 @@ class window.Robot extends Backbone.Model
   locateSelf: ->
     @env.x = @get('x') + @get('width') / 2
     @env.y = @get('y') + @get('height') / 2
-    @env.dir = (360 - @get('dir') * 360 / Math.TAO) % 360  #kid-friendly
+    @env.dir = Math.floor((360 - @get('dir') * 360 / Math.TAO) % 360)  #kid-friendly
 
   locateEnemy: ->
     return unless @enemy()
     @env.ex = @enemy().get('x') + @enemy().get('width') / 2
     @env.ey = @enemy().get('y') + @enemy().get('height') / 2
-    @env.edir = (360 - @enemy().get('dir') * 360 / Math.TAO) % 360 #kid-friendly
+    @env.edir = Math.floor((360 - @enemy().get('dir') * 360 / Math.TAO) % 360) #kid-friendly
 
   targetSeen: =>
     #calculates distance a shot fired would miss an enemy's center by
@@ -183,10 +183,10 @@ class window.Robot extends Backbone.Model
 
   upload: (name)->
     Parse.initialize("ws2K2mzPe0YayCqXOT50STBeZqFe3PJIvkwbmsyG", "Q32iv4tLwEOS5gEiWXwOBRQX2xtA75Fu5SRuIFV9");
-
     RoboRecord = Parse.Object.extend('RoboScript')
     @roboRecord = new RoboRecord() unless @roboRecord
-    @roboRecord.set('name', name || @get('name'))
+    name = name || @get('name')
+    @roboRecord.set('name', name)
     @roboRecord.set('source', @get('source'))
 
     query = new Parse.Query('RoboScript')
@@ -194,13 +194,12 @@ class window.Robot extends Backbone.Model
     that = @
     promise = query.first(
       success: (result)=>
-        console.log result
-        if (result and result.id != that.roboRecord.id)
+        if (result and result.id != that.get('roboRecord').id)
           alert "Oh noes!  An evil robot maker has already used up that name!"
         else
           @roboRecord.save(null, {
             success: (@roboRecord)->
-              console.log "lol, dude I'm on Polk Street!"
+              alert("#{name} has been saved to the Robo Server")
             error: (@roboRecord, error)->
               console.log "ran into an #{error}"
           })
@@ -262,6 +261,7 @@ class window.RobotCommandView extends Backbone.View
 
   events:
     'click .editButton': 'toggleView'
+    'click .saveButton': 'saveRobot'
     'click .heading': 'editName'
     'keyup .headingEdit': 'updateName'
 
@@ -295,15 +295,19 @@ class window.RobotCommandView extends Backbone.View
     @$('.headingEdit').focus()
 
   updateName: (e)->
-    if e.which == 13
+    if e.which == 13 #enter key was hit
       newName = @$('.headingEdit').val()
       @model.set('name', newName)
-      @render()
-      console.log('updated')
+      @$('.headingEdit').replaceWith('<h3 class="heading">'+"#{@model.get('name')}</h3>")
+
+  saveRobot: ->
+    @model.upload()
 
   render: ->
     @$el.html('<div class="editButton">Edit</div>')
     @$el.append('<h3 class="heading">'+"#{@model.get('name')}</h3>")
+    @$el.append('<div class="saveButton">Save</div>')
+
     @$el.append("<div class='hp'>HP: #{@model.get('hp')}</div>")
     pre = ('<pre>')
     pre += @model.get('source')
@@ -314,7 +318,7 @@ class window.RobotCommandView extends Backbone.View
 
   renderInput: ->
     @$el.html('<div class="editButton">Done</div>')
-    @$el.append('<h3 class="heading">'+"#{@model.get('name')}</h3>")
+    @$el.append('<input class="headingEdit" value="' + "#{@model.get('name')}" + '"/>')
     area = ('<textarea>')
     area += @model.get('source')
     @$el.append(area+'</textarea>')

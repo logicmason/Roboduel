@@ -22,7 +22,7 @@ fun with a sprinkle of educational value!"
   - Programs are user editable and robots immediately respond
   - Robots can fire missiles
   - Branching, looping and variable declarations are supported in robocode
-  - Robots can be saved and loaded to the server, but only through the console
+  - Robots can be saved and loaded to the server via load and save buttons
   - Game design still evolving
 
 

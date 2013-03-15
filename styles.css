@@ -91,7 +91,7 @@ span.start{
   font-size: 20px;
 }
 
-.headingEdit { 
+.headingEdit {
   font-family: 'Iceland', sans-serif;
   font-size: 30px;
   line-height: 30px;
@@ -101,10 +101,13 @@ span.start{
 }
 .commands .heading { font-size: 30px; line-height: 30px;}
 
-.editButton {
+.editButton, .saveButton{
   float: right;
   background: blue;
+  background-image: -webkit-linear-gradient(135deg, #50a, violet); /* For Chrome and Safari */
+  background-image: linear-gradient(135deg, #50a, violet);
   width: 70px;
+  border-radius: 7px;
   height: 30px;
   line-height: 30px;
   text-align: center;
@@ -162,7 +165,7 @@ li:hover{
   from {
     opacity: 1;
   }
- 
+
   to {
     opacity: 0.5;
   }
