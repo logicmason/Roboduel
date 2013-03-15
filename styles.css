@@ -3,13 +3,17 @@ body, html{
 }
 body {
   margin: 0;
-  background-color:#fff;
-  font-size: 18px;
 }
 
 .main {
+  position: relative;
   width: 1000px;
+  height: 100%;
+  background-color:#fff;
+  font-size: 18px;
+  z-index: 1;
 }
+
 
 .arena {
   float: left;
