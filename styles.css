@@ -91,7 +91,15 @@ span.start{
   font-size: 20px;
 }
 
-.commands .heading { font-size: 30px;}
+.headingEdit { 
+  font-family: 'Iceland', sans-serif;
+  font-size: 30px;
+  line-height: 30px;
+  width: 200px;
+  margin: 0;
+  padding: 0;
+}
+.commands .heading { font-size: 30px; line-height: 30px;}
 
 .editButton {
   float: right;

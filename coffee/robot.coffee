@@ -262,6 +262,8 @@ class window.RobotCommandView extends Backbone.View
 
   events:
     'click .editButton': 'toggleView'
+    'click .heading': 'editName'
+    'keyup .headingEdit': 'updateName'
 
   initialize: ->
     @listenTo(@model, 'change:script', @render)
@@ -288,6 +290,17 @@ class window.RobotCommandView extends Backbone.View
         @render()
     console.log "#{@display} display"
 
+  editName: ->
+    @$('.heading').replaceWith('<input class="headingEdit" value="' + "#{@model.get('name')}" + '"/>')
+    @$('.headingEdit').focus()
+
+  updateName: (e)->
+    if e.which == 13
+      newName = @$('.headingEdit').val()
+      @model.set('name', newName)
+      @render()
+      console.log('updated')
+
   render: ->
     @$el.html('<div class="editButton">Edit</div>')
     @$el.append('<h3 class="heading">'+"#{@model.get('name')}</h3>")
@@ -296,6 +309,7 @@ class window.RobotCommandView extends Backbone.View
     pre += @model.get('source')
     @$el.append(pre + "</pre>")
     @display = 'standard'
+    @$('heading').on('click')
     @
 
   renderInput: ->
