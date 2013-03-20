@@ -1,6 +1,7 @@
 body, html{
   height:100%;
 }
+
 body {
   margin: 0;
 }
@@ -14,7 +15,15 @@ body {
   z-index: 1;
 }
 
-
+.help {
+  position: absolute;
+  top: 32px;
+  width: 940px;
+  margin: 20px;
+  height: 100%;
+  background: #efefef;
+  z-index: 2;
+}
 .arena {
   float: left;
   width: 600px;

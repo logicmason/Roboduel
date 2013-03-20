@@ -76,6 +76,12 @@ class window.Game extends Backbone.Model
         alert("Error fetching bot from Parse: #{error.message}")
     )
 
+  hideInstructions: ()->
+    $('.help').hide()
+
+  showInstructions: ()->
+    $('.help').show()
+
 $(document).ready ->
   window.game = new Game()
   window.robotorium.models[0].die() #TODO prevent creation of default bot
@@ -83,4 +89,6 @@ $(document).ready ->
   $('.loadRobot').click(game.loadRobot)
   $('.start').click(game.start)
   $('.loadEnemy').click(game.loadEnemy)
+  $('.help').click(game.hideInstructions)
+  $('.instructions').click(game.showInstructions)
 
