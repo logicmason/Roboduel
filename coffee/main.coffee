@@ -76,6 +76,19 @@ class window.Game extends Backbone.Model
         alert("Error fetching bot from Parse: #{error.message}")
     )
 
+  getBotsStartingWith: (str, foundCB, noneCB)=>
+    Parse.initialize("ws2K2mzPe0YayCqXOT50STBeZqFe3PJIvkwbmsyG", "Q32iv4tLwEOS5gEiWXwOBRQX2xtA75Fu5SRuIFV9");
+    query = new Parse.Query('RoboScript')
+    promise = query.limit(10).startsWith('name', str).find(
+      success: (results)=>
+        if (results)
+          window.results = results
+          _(results).each (bot)->
+              console.log(bot.get('name'))
+        else
+          return false
+    )
+
   hideInstructions: ()->
     $('.help').hide()
 
