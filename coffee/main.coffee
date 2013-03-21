@@ -6,6 +6,7 @@ class window.Game extends Backbone.Model
     window.silo = new MissileCollection({})
     window.robotorium = new RobotCollection({})
     @listenTo(window.robotorium, "finalSurvivor", @finalSurvivor)
+    @showInstructions()
 
   addRobot: (options)->
     r = new Robot(options)
@@ -90,10 +91,25 @@ class window.Game extends Backbone.Model
     )
 
   hideInstructions: ()->
-    $('.help').hide()
+    $('.help').animate(
+      opacity: 0
+    , 1000
+    )
+    $('.main').animate(
+      opacity: 1
+    , 1000
+    )
 
   showInstructions: ()->
-    $('.help').show()
+    $('.help').animate(
+      opacity: 1
+    , 1000
+    )
+    $('.main').animate(
+      opacity: .4
+    , 1000, ()-> $('.help').show()
+    )
+
 
 $(document).ready ->
   window.game = new Game()
