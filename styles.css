@@ -23,7 +23,8 @@ body {
   overflow: scroll;
   margin: 20px;
   padding: 25px;
-  background: #ddf;
+  background: #00d;
+  color: #fff;
   opacity: 0;
   z-index: 2;
 }
