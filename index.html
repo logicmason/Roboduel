@@ -68,9 +68,12 @@ check (dir > 180)
 </code></pre>
 
 <p>The above block of code will do the following:
-1) Run locate self, which sets <strong>x</strong> to the robot's current x position, <strong>y</strong> to its current y position and <strong>dir</strong> to its current direction (in degrees).  Later commands can now use <strong>x</strong>, <strong>y</strong> and <strong>dir</strong>.
-
-2b) Otherwise the robot will turn clockwise.</p>
+<br/>
+<ol><li> Run locate self, which sets <strong>x</strong> to the robot's current x position, <strong>y</strong> to its current y position and <strong>dir</strong> to its current direction (in degrees).  Later commands can now use <strong>x</strong>, <strong>y</strong> and <strong>dir</strong>.
+</li>
+<li> check to see if the direction it's pointing towards is > 180 degrees (i.e. downward)</li>
+<li> If it's pointing downward, it will fire</li>
+<li> Otherwise the robot will turn clockwise.</li></ol></p>
 
 <p><strong>do</strong>: Do starts a loop of commands.  It's useful with <strong>check</strong>.</p>
 
@@ -84,7 +87,7 @@ check (dir > 180)
 <h3>Logical conjuctions: "and", "or"</h3>
 
 <p>Some condition <strong>and</strong> some other condition will return true only if <em>both</em> conditions are true.
-Some condition  <strong>or</strong> some other condition will return true if <em>either</em> of them are true.</p>
+<br/>Some condition  <strong>or</strong> some other condition will return true if <em>either</em> of them are true.</p>
 
 <pre><code>locateEnemy
 check (edir > 170 and edir < 190)
