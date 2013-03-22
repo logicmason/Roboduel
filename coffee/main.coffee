@@ -35,10 +35,13 @@ class window.Game extends Backbone.Model
 
   loadRobot: (event, name)=>
     # name || name = prompt "Who would you like to load?", name
+    @getEnemyNext = false
     unless name
+      $('.rightbar').hide()
       $('.loader').show()
       return
 
+    $('.rightbar').show()
     unless @playerbot
       botSource = @checkDBforBot(name, (result)=>
         @addRobot({
@@ -52,7 +55,14 @@ class window.Game extends Backbone.Model
     else @playerbot.download(name)
 
   loadEnemy: (event, name)=>
-    name = name || prompt "Who would you like to load?"
+    # name = name || prompt "Who would you like to load?"
+    @getEnemyNext = true
+    unless name
+      $('.rightbar').hide()
+      $('.loader').show()
+      return
+
+    $('.rightbar').show()
     unless @enemybot
       botSource = @checkDBforBot(name, (result)=>
         @addRobot({
@@ -120,7 +130,6 @@ class window.Game extends Backbone.Model
   updateBotSearch: ()=>
     search = $('.botsearch').val()
     $('.loader h3').text("Searching server for: " +search)
-    console.log("searching for: " + search)
     bots = @getBotsStartingWith(search,
       (names)=>
         listEl = '<ul>'
@@ -131,7 +140,10 @@ class window.Game extends Backbone.Model
     )
 
   selectBotToLoad: ()->
-    game.loadRobot(null, $(@).text())
+    if (game.getEnemyNext)
+      game.loadEnemy(null, $(@).text())
+    else
+      game.loadRobot(null, $(@).text())
     $('.loader').hide()
 
 $(document).ready ->

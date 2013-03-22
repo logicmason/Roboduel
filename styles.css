@@ -84,6 +84,7 @@ span.start{
   padding: 10px 20px;
   width: 330px;
   height: 500px;
+  scroll: auto;
   margin:0;
   background: wheat;
 }
@@ -153,7 +154,7 @@ li{
   margin-left:0;
 }
 
-li:hover{
+.topbar li:hover{
   background:#777;
   color:#fff;
 }
