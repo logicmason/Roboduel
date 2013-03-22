@@ -154,7 +154,7 @@ li{
   margin-left:0;
 }
 
-.topbar li:hover{
+.topbar li:hover, .loader li:hover{
   background:#777;
   color:#fff;
 }

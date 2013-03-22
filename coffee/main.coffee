@@ -7,6 +7,7 @@ class window.Game extends Backbone.Model
     window.silo = new MissileCollection({})
     window.robotorium = new RobotCollection({})
     @listenTo(window.robotorium, "finalSurvivor", @finalSurvivor)
+    @updateBotSearch()
     @showInstructions()
 
   addRobot: (options)->
@@ -129,7 +130,10 @@ class window.Game extends Backbone.Model
 
   updateBotSearch: ()=>
     search = $('.botsearch').val()
-    $('.loader h3').text("Searching server for: " +search)
+    if (search or search == undefined)
+      $('.loader h3').text("Searching server for: " +search)
+    else
+      $('.loader h3').text("Type a name and click to select")
     bots = @getBotsStartingWith(search,
       (names)=>
         listEl = '<ul>'
@@ -145,6 +149,7 @@ class window.Game extends Backbone.Model
     else
       game.loadRobot(null, $(@).text())
     $('.loader').hide()
+
 
 $(document).ready ->
   window.game = new Game()
