@@ -13,7 +13,6 @@ body {
   background-color:#fff;
   font-size: 18px;
   opacity: 1;
-  z-index: 1;
 }
 
 .help {
@@ -28,6 +27,7 @@ body {
   opacity: 0;
   z-index: 2;
 }
+
 .arena {
   float: left;
   width: 600px;
@@ -77,16 +77,15 @@ span.start{
   background-color: #777;
 }
 
-.dropdown{
-  width:150px;
-  background-color:#ccc;
-  color:#555;
-  z-index:100000000;
-  position:absolute;
-  list-style-type: none;
-  margin-left:-25px;
-  margin-top:0;
-  padding-left:0;
+.loader {
+  position: absolute;
+  top: 42px;
+  left: 630px;
+  padding: 10px 20px;
+  width: 330px;
+  height: 500px;
+  margin:0;
+  background: wheat;
 }
 
 .rightbar {

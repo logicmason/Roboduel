@@ -1,6 +1,7 @@
 Math.TAO = Math.PI * 2
 
 class window.Game extends Backbone.Model
+  # TODO: separate out game view!
 
   initialize: ->
     window.silo = new MissileCollection({})
@@ -14,7 +15,6 @@ class window.Game extends Backbone.Model
     rView = new RobotView({model: r})
     cmdv = new RobotCommandView({model: r})
     cmdv.render()
-    # TODO: make game view
     $('.arena').append(rView.render().el)
     window.robotorium.add(r)
 
@@ -34,7 +34,11 @@ class window.Game extends Backbone.Model
     @enemybot = null
 
   loadRobot: (event, name)=>
-    name || name = prompt "Who would you like to load?", name
+    # name || name = prompt "Who would you like to load?", name
+    unless name
+      $('.loader').show()
+      return
+
     unless @playerbot
       botSource = @checkDBforBot(name, (result)=>
         @addRobot({
@@ -83,9 +87,12 @@ class window.Game extends Backbone.Model
     promise = query.limit(10).startsWith('name', str).find(
       success: (results)=>
         if (results)
+          names = []
           window.results = results
           _(results).each (bot)->
-              console.log(bot.get('name'))
+              names.push(bot.get('name'))
+          console.log names
+          foundCB(names)
         else
           return false
     )
@@ -93,7 +100,7 @@ class window.Game extends Backbone.Model
   hideInstructions: ()->
     $('.help').animate(
       opacity: 0
-    , 1000
+    , 1000, ()-> $('.help').hide()
     )
     $('.main').animate(
       opacity: 1
@@ -110,9 +117,26 @@ class window.Game extends Backbone.Model
     , 1000, ()-> $('.help').show()
     )
 
+  updateBotSearch: ()=>
+    search = $('.botsearch').val()
+    $('.loader h3').text("Searching server for: " +search)
+    console.log("searching for: " + search)
+    bots = @getBotsStartingWith(search,
+      (names)=>
+        listEl = '<ul>'
+        _(names).each (name)->
+          listEl += "<li class='botSelect'>#{name}</li>"
+        listEl += '</ul'>
+        $('.loader ul').replaceWith(listEl)
+    )
+
+  selectBotToLoad: ()->
+    game.loadRobot(null, $(@).text())
+    $('.loader').hide()
 
 $(document).ready ->
   window.game = new Game()
+  $('.loader').hide()
   window.robotorium.models[0].die() #TODO prevent creation of default bot
   $('.addRobot').click(game.addRobot)
   $('.loadRobot').click(game.loadRobot)
@@ -120,4 +144,6 @@ $(document).ready ->
   $('.loadEnemy').click(game.loadEnemy)
   $('.help').click(game.hideInstructions)
   $('.instructions').click(game.showInstructions)
+  $('.loader').on('keyup', game.updateBotSearch)
+  $('.loader').on('click', '.botSelect', game.selectBotToLoad)
 
