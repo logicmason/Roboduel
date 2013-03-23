@@ -115,21 +115,21 @@ class window.Game extends Backbone.Model
   hideInstructions: ()->
     $('.help').animate(
       opacity: 0
-    , 1000, ()-> $('.help').hide()
+    , 500, ()-> $('.help').hide()
     )
     $('.main').animate(
       opacity: 1
-    , 1000
+    , 500
     )
 
   showInstructions: ()->
     $('.help').animate(
       opacity: 1
-    , 1000
+    , 500
     )
     $('.main').animate(
       opacity: .4
-    , 1000, ()-> $('.help').show()
+    , 500, ()-> $('.help').show()
     )
 
   updateBotSearch: ()=>

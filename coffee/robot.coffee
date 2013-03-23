@@ -244,6 +244,7 @@ class window.RobotView extends Backbone.View
     @listenTo(@model, 'change', @render)
     @listenTo(@model, 'damage', @blink)
     @listenTo(@model, 'destroy', @remove)
+    @$el.addClass('enemy') if @model.get('enemy')
 
   blink: ->
     @$el.addClass('damage')

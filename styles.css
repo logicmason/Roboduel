@@ -105,6 +105,7 @@ span.start{
 .enemy {
   background: #a66;
 }
+
 .commands .heading, .commands .hp {
   font-family: 'Iceland', sans-serif;
   margin: 0;
@@ -168,6 +169,10 @@ li{
   border: 20px solid blue;
   border-radius: 12px;
   font-size: 0;
+}
+
+.robot.enemy  {
+    border: 20px solid red;
 }
 
 .missile {
