@@ -102,6 +102,9 @@ span.start{
   width: 320px;
 }
 
+.enemy {
+  background: #a66;
+}
 .commands .heading, .commands .hp {
   font-family: 'Iceland', sans-serif;
   margin: 0;

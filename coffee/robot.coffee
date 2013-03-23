@@ -304,6 +304,7 @@ class window.RobotCommandView extends Backbone.View
     @model.upload()
 
   render: ->
+    @$el.addClass('enemy') if @model.get('enemy')
     @$el.html('<div class="editButton">Edit</div>')
     @$el.append('<h3 class="heading">'+"#{@model.get('name')}</h3>")
     @$el.append('<div class="saveButton">Save</div>')

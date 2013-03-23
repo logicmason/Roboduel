@@ -10,8 +10,12 @@ class window.Game extends Backbone.Model
     @updateBotSearch()
     @showInstructions()
 
-  addRobot: (options)->
+  addRobot: (options)=>
     r = new Robot(options)
+    if @playerbot and !r.enemy
+      temp = @playerbot
+      @playerbot = r
+      temp.die()
     r.readRecord() if r.get('roboRecord')
     rView = new RobotView({model: r})
     cmdv = new RobotCommandView({model: r})
