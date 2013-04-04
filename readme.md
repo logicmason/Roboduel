@@ -16,13 +16,13 @@ fun with a sprinkle of educational value!"
 
 
 ### Development status
-  - Started as 2 day personal project, many more updates to come in the next couple of days
   - Robots can be either created or downloaded and placed into the arena
   - Parser and interpretter for the robots' programming language written
   - Programs are user editable and robots immediately respond
   - Robots can fire missiles
   - Branching, looping and variable declarations are supported in robocode
   - Robots can be saved and loaded to the server via load and save buttons
+  - Minimal instructions added, but UI still bare
   - Game design still evolving
 
 
