@@ -49,13 +49,14 @@ img {
 }
 a:link, a:visited, a:active{
   color: lightblue;
-  padding-left:25px;
   margin-top:-20px;
 }
 
-.topbar span{
-  padding:5px 10px;
+.navitem, .navitem .a {
+  padding:2px 10px;
+  margin: 3px 3px;
   color: #ddd;
+  background: #404044;
   border-radius: 5px;
   float:right;
 }
@@ -65,7 +66,7 @@ span.start{
   margin-left: 20px;
 }
 
-.topbar span:hover{
+.navitem:hover {
   background-color: #885;
   text-shadow: 1px 1px 2px #775;
 }
