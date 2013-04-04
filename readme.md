@@ -22,9 +22,14 @@ fun with a sprinkle of educational value!"
   - Robots can fire missiles
   - Branching, looping and variable declarations are supported in robocode
   - Robots can be saved and loaded to the server via load and save buttons
-  - Minimal instructions added, but UI still bare
   - Game design still evolving
 
+### Todo
+  - Make UI clearer in game
+  - Remove example codes
+  - Style buttons to stand out even when not hovering
+  - Fix saving on edge cases
+  - Add screenshot to instructions
 
 ### Development tools and environment of choice
 RoboDuel is written in [CoffeeScript], using the Sublime (with VIM support via Vintage and VintageEx).  All development has been on Chrome and MacOS.  [Backbone.js] is used to structure the code.  The parser for the robot language was made with [PEG.js] and the initial basis for the interpreter was scheme.
