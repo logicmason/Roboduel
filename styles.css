@@ -1,20 +1,18 @@
-body, html{
-  height:100%;
+body,
+html {
+  height: 100%;
 }
-
 body {
   margin: 0;
 }
-
 .main {
   position: relative;
   width: 1000px;
   height: 100%;
-  background-color:#fff;
+  background-color: #fff;
   font-size: 18px;
   opacity: 1;
 }
-
 .help {
   position: absolute;
   top: 32px;
@@ -28,7 +26,6 @@ body {
   opacity: 0;
   z-index: 2;
 }
-
 .arena {
   float: left;
   width: 600px;
@@ -38,47 +35,40 @@ body {
   border-top: 1px solid black;
   box-shadow: 0px 0px 5px 2px black inset;
   margin: 10px;
-  background-color:silver;
+  background-color: silver;
   border: 1px solid gray;
 }
-
 img {
-
- transition: all 1s ease-in;
-
+  transition: all 1s ease-in;
 }
-a:link, a:visited, a:active{
+a: link, a: visited, a: active {
   color: lightblue;
-  margin-top:-20px;
+  margin-top: -20px;
 }
-
-.navitem, .navitem .a {
-  padding:2px 10px;
+.navitem,
+.navitem .a {
+  padding: 2px 10px;
   margin: 3px 3px;
   color: #ddd;
   background: #404044;
   border-radius: 5px;
-  float:right;
+  float: right;
 }
-
-span.start{
+span.start {
   float: left;
   margin-left: 20px;
 }
-
-.navitem:hover {
+.navitem: hover {
   background-color: #885;
   text-shadow: 1px 1px 2px #775;
 }
-
-.topbar{
-  height:32px;
+.topbar {
+  height: 32px;
   background-color: #555;
 }
-.title{
+.title {
   background-color: #777;
 }
-
 .loader {
   position: absolute;
   top: 42px;
@@ -87,33 +77,29 @@ span.start{
   width: 330px;
   height: 500px;
   scroll: auto;
-  margin:0;
+  margin: 0;
   background: wheat;
 }
-
 .rightbar {
   padding: 10px;
   margin-left: 620px;
 }
-
 .commands {
   background: wheat;
-  margin:0;
+  margin: 0;
   padding: 10px 20px;
   width: 320px;
 }
-
 .enemy {
   background: #a66;
 }
-
-.commands .heading, .commands .hp {
+.commands .heading,
+.commands .hp {
   font-family: 'Iceland', sans-serif;
   margin: 0;
   padding: 5px;
   font-size: 20px;
 }
-
 .headingEdit {
   font-family: 'Iceland', sans-serif;
   font-size: 30px;
@@ -122,12 +108,16 @@ span.start{
   margin: 0;
   padding: 0;
 }
-.commands .heading { font-size: 30px; line-height: 30px;}
-
-.editButton, .saveButton{
+.commands .heading {
+  font-size: 30px;
+  line-height: 30px;
+}
+.editButton,
+.saveButton {
   float: right;
   background: blue;
-  background-image: -webkit-linear-gradient(135deg, #50a, violet); /* For Chrome and Safari */
+  background-image: -webkit-linear-gradient(135deg, #50a, violet);
+  /* For Chrome and Safari */
   background-image: linear-gradient(135deg, #50a, violet);
   width: 70px;
   border-radius: 7px;
@@ -137,7 +127,6 @@ span.start{
   vertical-align: middle;
   color: white;
 }
-
 textarea {
   line-height: 1.7em;
   font-size: 15px;
@@ -145,7 +134,6 @@ textarea {
   width: 240px;
   margin: 10px 10px 0;
 }
-
 pre {
   font-family: 'Droid Sans Mono';
   font-size: 14px;
@@ -154,28 +142,23 @@ pre {
   padding: 5px;
   margin-bottom: 10px;
 }
-
-li{
-  padding:5px;
-  margin-left:0;
+li {
+  padding: 5px;
+  margin-left: 0;
 }
-
-.topbar li:hover, .loader li:hover{
-  background:#777;
-  color:#fff;
+.topbar li: hover, .loader li: hover {
+  background: #777;
+  color: #fff;
 }
-
 .robot {
   position: absolute;
   border: 20px solid blue;
   border-radius: 12px;
   font-size: 0;
 }
-
-.robot.enemy  {
-    border: 20px solid red;
+.robot.enemy {
+  border: 20px solid red;
 }
-
 .missile {
   position: absolute;
   border: 5px solid black;
@@ -183,16 +166,13 @@ li{
   border-bottom: 2px solid black;
   border-radius: 2px;
 }
-
 .damage {
   opacity: 0.5;
 }
-
 @keyframes damage {
   from {
     opacity: 1;
   }
-
   to {
     opacity: 0.5;
   }
